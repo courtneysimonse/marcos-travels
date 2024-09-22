@@ -129,6 +129,8 @@ function drawMap(data) {
     // var popupEl = document.getElementById("popup");
 
     var infoBox = d3.select("#info-box");
+    var infoContent = d3.select("#info-content");
+    var submitBtn = d3.select(".btn-submit");
     
     var selected;
     
@@ -250,13 +252,12 @@ function drawMap(data) {
             infoHTML += `<h3>${props['name']}</h3><hr>`;
 
             if (!props["votable"]) {
+                submitBtn.classed("hidden", true);
                 infoHTML += `<img width="200px" src="./images/${props["image"]}" />`
                 infoHTML += `<p>Read Marco's adventure in <a href="${props["link"]}" target="_blank">${props["title"]}</a></p>`
             } else {
+                submitBtn.classed("hidden", false);
                 infoHTML += `<p>Do you want to vote for Marco to travel to ${props["name"]}?</p>`;
-                infoHTML += `<form name="voting" method="POST" data-netlify="true">
-                    <button type="submit">Yes</button>
-                    </form>`
             }
 
             // var infoLink = props['More Info Link'];
@@ -279,8 +280,9 @@ function drawMap(data) {
             // <p><a class="button button-primary" href="${infoLink}">More ${props['State']} Info</a></p>
             // <p><a class="button button-secondary" href="https://www.thebizofseniorcare.com/pages/about-me">Contact Us</a></p>`;
 
-            infoBox.html(infoHTML)
-                .transition().duration(200).style("opacity", 1);
+            infoContent.html(infoHTML);
+            
+            infoBox.transition().duration(200).style("opacity", 1);
             
            
             

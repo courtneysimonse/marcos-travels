@@ -2,11 +2,14 @@
 <html>
 
 <head>
-  <title>Demo</title>
-  <meta name="viewport" content="initial-scale=1.0">
-  <meta charset="utf-8">
+    <title>Demo</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
 
-  <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://early.webawesome.com/webawesome@3.0.0-alpha.2/dist/themes/default.css" />
+    <script type="module" src="https://early.webawesome.com/webawesome@3.0.0-alpha.2/dist/webawesome.loader.js"></script>
+
+    <link rel="stylesheet" href="styles.css">
 
 </head>
 
@@ -16,7 +19,12 @@
       <!-- map added to a div with id "map" -->
       <div id="map"></div>
       <!-- poll info box -->
-      <div id="info-box"></div>
+      <div id="info-box">
+        <div id="info-content"></div>
+        <form class="voting-form" name="voting" method="POST" data-netlify="true">
+            <wa-button class="btn-submit" type="submit">Yes</button>
+        </form>
+      </div>
     </div>
 
 

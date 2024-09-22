@@ -132,3 +132,7 @@ html, body {
 .selected {
     stroke: #eceeef;
 }
+
+.hidden {
+    display: none;
+}
