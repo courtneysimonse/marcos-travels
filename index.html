@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Demo</title>
+  <meta name="viewport" content="initial-scale=1.0">
+  <meta charset="utf-8">
+
+  <link rel="stylesheet" href="styles.css">
+
+</head>
+
+<body>
+
+    <div id="map-container">
+      <!-- map added to a div with id "map" -->
+      <div id="map"></div>
+      <!-- poll info box -->
+      <div id="info-box"></div>
+    </div>
+
+
+    <!-- empty popup -->
+    <div class="popup" role="tooltip" id="popup">
+      <div id="content-div"></div>
+      <div id="arrow"></div>
+    </div>
+
+
+  <!-- External libraries for map -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://unpkg.com/topojson@3.0.2/dist/topojson.js"></script>
+  <!-- <script src="https://unpkg.com/htl@0.3.1/dist/htl.min.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/@floating-ui/core@1.0.1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.0.4"></script>
+
+  <!-- Map script -->
+  <script type="module" src="map.js"></script>
+</body>
+
+</html>
