@@ -130,6 +130,7 @@ function drawMap(data) {
 
     var infoBox = d3.select("#info-box");
     var infoContent = d3.select("#info-content");
+    var voteChoice = d3.select("#vote-choice");
     var submitBtn = d3.select(".btn-submit");
     
     var selected;
@@ -158,7 +159,7 @@ function drawMap(data) {
         
         let props = continentData.find(x => x["name"] == d.properties.CONTINENT);
         
-        if (props != undefined) {
+        if (props != undefined && props["name"] != "Antarctica") {
             this.style.cursor = 'pointer';
             d3.select(this).classed("hover", true) // select it and add a class name
 
@@ -256,29 +257,10 @@ function drawMap(data) {
                 infoHTML += `<img width="200px" src="./images/${props["image"]}" />`
                 infoHTML += `<p>Read Marco's adventure in <a href="${props["link"]}" target="_blank">${props["title"]}</a></p>`
             } else {
+                voteChoice.property("value",props["name"]);
                 submitBtn.classed("hidden", false);
                 infoHTML += `<p>Do you want to vote for Marco to travel to ${props["name"]}?</p>`;
             }
-
-            // var infoLink = props['More Info Link'];
-            // if (infoLink == '') {
-            //     infoLink = '#';
-            // }
-
-            // infoHTML += `<ul>
-            // <li><strong>Does State Require Home Care License:</strong> ${props['Does State Require Home Care License']}</li>
-            // <li><strong>Type of License Required:</strong> ${props['Type of License Required']}</li>
-            // <li><strong>Typical Processing Time from App to Approval:</strong> ${props['Typical Processing Time from App to Approval']}</li>
-            // <li><strong>On-Site Survey Required:</strong> ${props['On-Site Survey Required']}</li>
-            // <li><strong>Required Training for HCA Manager:</strong> ${props['Required Training for HCA Manager']}</li>
-            // <li><strong>Initial Application Fee:</strong> ${props['Initial Application Fee']}</li>
-            // <li><strong>Required Roles: </strong> ${props['Required Roles']}</li>
-            // <li><strong>RN Required: </strong> ${props['RN Required']}</li>
-            // <li><strong>Health Department: </strong> <a href="${props['Health Department Link']}" target="_blank">${props['Health Department']}</a></li>
-            // <li><strong>Home Care Regulations: </strong> <a href="${props['Home Care Regulations Link']}" target="_blank">${props['Home Care Regulations']}</a></li>
-            // </ul>
-            // <p><a class="button button-primary" href="${infoLink}">More ${props['State']} Info</a></p>
-            // <p><a class="button button-secondary" href="https://www.thebizofseniorcare.com/pages/about-me">Contact Us</a></p>`;
 
             infoContent.html(infoHTML);
             
@@ -293,15 +275,7 @@ function drawMap(data) {
     })
 
 
-    // var dc = path.centroid(statesGeoJSON.features.find(x => x.properties.name == "District of Columbia"));
 
-    // // find DC star, move, and raise to top of states
-    // d3.select(`[data-state="District of Columbia"]`)
-    //     .attr("transform", (d) => { 
-    //         return "translate(" + dc[0] + "," + dc[1] + ")";
-    //     })
-    //     .raise();
-    
 
     // // d3.select('body').on('click', () => {
     // //     if (selected != null) {
@@ -309,47 +283,7 @@ function drawMap(data) {
     // //     }
     // // })
 
-    // // create a list of keys
-    // var keys = ["Requires State Home Care License", "No State Home Care License Required"]
-
-    // // Usually you have a color scale in your chart already
-    // var color = d3.scaleOrdinal()
-    // .domain(keys)
-    // .range(["#99badd","#ddbc99"]);
-
-    // //Initialize legend
-    // var legendItemSize = 24;
-    // var legendSpacing = 4;
-    // var xOffset = 150;
-    // var yOffset = 500;
-    // var legend = svg
-    // .append('g')
-    //     .selectAll('.legendItem')
-    //     .data(keys);
-
-    // //Create legend items
-    // legend
-    // .enter()
-    // .append('rect')
-    // .attr('class', 'legendItem')
-    // .attr('width', legendItemSize)
-    // .attr('height', legendItemSize)
-    // .style('fill', d => color(d))
-    // .attr('transform',
-    //         (d, i) => {
-    //             var x = xOffset;
-    //             var y = yOffset + (legendItemSize + legendSpacing) * i;
-    //             return `translate(${x}, ${y})`;
-    //         });
-
-    // //Create legend labels
-    // legend
-    // .enter()
-    // .append('text')
-    // .attr('x', xOffset + legendItemSize + 5)
-    // .attr('y', (d, i) => yOffset + (legendItemSize + legendSpacing) * i + 18)
-    // .text(d => d);  
-    
+ 
 
     // d3.select(window).on('resize', () => {
     //     svg.attr(
