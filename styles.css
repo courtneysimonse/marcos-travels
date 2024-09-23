@@ -133,6 +133,6 @@ html, body {
     stroke: #eceeef;
 }
 
-.hidden {
+.hidden, #vote-choice {
     display: none;
 }
