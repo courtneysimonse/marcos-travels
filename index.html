@@ -21,7 +21,13 @@
       <!-- poll info box -->
       <div id="info-box">
         <div id="info-content"></div>
-        <form class="voting-form" name="voting" method="POST" data-netlify="true">
+        <form 
+          class="voting-form" 
+          name="voting" 
+          method="POST" 
+          data-netlify="true"
+          action="/chart.html"
+          >
             <input id="vote-choice" type="text" name="choice" />
             <wa-button class="btn-submit" type="submit">Yes</button>
         </form>

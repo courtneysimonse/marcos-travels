@@ -274,7 +274,13 @@ function drawMap(data) {
         }
     })
 
+    
 
+    // d3.select("form").on("submit", (e) => {
+    //     e.preventDefault();
+    //     console.log("form submitted");
+        
+    // })
 
 
     // // d3.select('body').on('click', () => {

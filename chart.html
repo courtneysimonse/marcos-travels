@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pie Chart with D3.js</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        .arc text {
+            font: 12px sans-serif;
+            text-anchor: middle;
+        }
+        .arc path {
+            stroke: #fff;
+        }
+    </style>
+</head>
+<body>
+    <svg width="500" height="500"></svg>
+
+    <script>
+        // Your data
+        const data = {
+            Africa: 2,
+            Asia: 1
+        };
+
+        // Set dimensions and radius of the pie chart
+        const width = 500;
+        const height = 500;
+        const radius = Math.min(width, height) / 2;
+
+        // Create the color scale
+        const color = d3.scaleOrdinal()
+            .domain(Object.keys(data))
+            .range(d3.schemeCategory10);
+
+        // Create the pie function
+        const pie = d3.pie()
+            .value(d => d[1]); // Value comes from the data object
+
+        // Create the arc function
+        const arc = d3.arc()
+            .innerRadius(0) // Full pie chart (no hole in the middle)
+            .outerRadius(radius);
+
+        // Create an SVG group element for the pie chart
+        const svg = d3.select("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .append("g")
+            .attr("transform", `translate(${width / 2}, ${height / 2})`);
+
+        // Create arcs and append them to the pie chart
+        const arcs = svg.selectAll(".arc")
+            .data(pie(Object.entries(data)))
+            .enter()
+            .append("g")
+            .attr("class", "arc");
+
+        // Append path for each arc and set the color
+        arcs.append("path")
+            .attr("d", arc)
+            .attr("fill", d => color(d.data[0]));
+
+        // Add text labels inside each arc
+        arcs.append("text")
+            .attr("transform", d => `translate(${arc.centroid(d)})`)
+            .text(d => `${d.data[0]}: ${d.data[1]}`)
+            .style("fill", "#fff");
+    </script>
+</body>
+</html>
