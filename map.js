@@ -13,10 +13,12 @@ function error(error) {
     console.log(error)
 }
 
+const greyColor = "#aaa"
+
 const continentData = [
     {
         name: "Asia",
-        color: "#656565",
+        color: greyColor,
         votable: false,
         link: "https://a.co/d/0zOc7mX",
         image: "cover-namaste-india.jpg",
@@ -29,7 +31,7 @@ const continentData = [
     },
     {
         name: "North America",
-        color: "#656565",
+        color: greyColor,
         votable: false,
         link: "https://a.co/d/4xBBBDi",
         image: "cover-st-lucia.png",
@@ -37,7 +39,7 @@ const continentData = [
     },
     {
         name: "South America",
-        color: "#656565",
+        color: greyColor,
         votable: false,
         link: "https://a.co/d/h69vXyV",
         image: "cover-hello-brazil.jpg",
@@ -55,7 +57,7 @@ const continentData = [
     },
     {
         name: "Antarctica",
-        color: "#656565",
+        color: greyColor,
         votable: false
     }
 ]
@@ -81,9 +83,9 @@ function drawMap(data) {
     
     const margin = {
         top: 10,
-        right: 0,
-        bottom: 0,
-        left: 0
+        right: 10,
+        bottom: 10,
+        left: 10
     };
     
     const width = document.getElementById('map').clientWidth - margin.left - margin.right;
@@ -114,15 +116,15 @@ function drawMap(data) {
         'translate(' + margin.left + ',' + margin.top + ')'
         );
         
-    var oceanBoundary = svg.append("g")
-        .selectAll("path")  // select all the paths (that don't exist yet)
-        .data(oceansGeojson.features) // use the GeoJSON data
-        .enter()  // enter the selection
-        .append("path")  // append new path elements for each data feature
-        .attr("d", path)  // give each path a d attribute value
-        .attr("fill", "#1a88b9")
-        .attr("stroke", "#373737")
-        .attr("fill-opacity", .7)
+    // var oceanBoundary = svg.append("g")
+    //     .selectAll("path")  // select all the paths (that don't exist yet)
+    //     .data(oceansGeojson.features) // use the GeoJSON data
+    //     .enter()  // enter the selection
+    //     .append("path")  // append new path elements for each data feature
+    //     .attr("d", path)  // give each path a d attribute value
+    //     .attr("fill", "#1a88b9")
+    //     .attr("stroke", "#373737")
+    //     .attr("fill-opacity", .7)
     
     // // select popup element
     // var popup = d3.select("#popup");

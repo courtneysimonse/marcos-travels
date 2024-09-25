@@ -1,13 +1,12 @@
 html, body {
     margin: 0;
     padding: 0;
-}
-  
+} 
   
 #map-container {
     display: flex;
     width: 100%;
-    background-color: #f5f5f5;
+    background-color: lightblue;
     flex-wrap: wrap;
     height: 100vh;
 }
@@ -126,7 +125,7 @@ html, body {
 .selected, .hover {
     stroke-opacity: 1;
     stroke-width: 2.8px;
-    stroke: #24678d;
+    stroke: #333;
 }
 
 .selected {
