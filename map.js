@@ -244,7 +244,7 @@ function drawMap(data) {
         
         let props = continentData.find(x => x["name"] == d.properties.CONTINENT);
         
-        if (props != undefined) {
+        if (props != undefined && props.name != "Antarctica") {
             if (selected != null) {
                 selected.classed("selected", false) // removed class from last selected
             }
