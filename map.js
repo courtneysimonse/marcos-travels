@@ -126,9 +126,9 @@ function drawMap(data) {
     //     .attr("stroke", "#373737")
     //     .attr("fill-opacity", .7)
     
-    // // select popup element
-    // var popup = d3.select("#popup");
-    // var popupEl = document.getElementById("popup");
+    // select popup element
+    var popup = d3.select("#popup");
+    var popupEl = document.getElementById("popup");
 
     var infoBox = d3.select("#info-box");
     var infoContent = d3.select("#info-content");
@@ -165,77 +165,39 @@ function drawMap(data) {
             this.style.cursor = 'pointer';
             d3.select(this).classed("hover", true) // select it and add a class name
 
-            // let popupHTML = '';
-            
-            // // state name
-            // popupHTML += `<h5>${props['State']}</h5>`;
+            let popupHTML = '';
 
-            // popupHTML += `<p>Click here for more info</p>`;
-            
-            // document.getElementById('content-div').innerHTML = popupHTML;
+            if (!props["votable"]) {
 
-            // popup.style("display", "block");
+                popupHTML += `<img width="200px" src="./images/${props["image"]}" />`
+                popupHTML += `<p>${props["title"]}</p>`
+            } else {
+
+                popupHTML += `<p>Click to select ${props["name"]}</p>`;
+            }
             
-            // popup.transition().duration(200).style("opacity", .95 );   // make tooltip visible and update info
+            popup.html(popupHTML)
+            .style("left", (e.pageX + 10) + "px")
+            .style("top", (e.pageY - 15) + "px");
+
+            popup.style("display", "block");
+            
+            popup.transition().duration(200).style("opacity", .95 );   // make tooltip visible and update info
             
         } else {
-            // popup.transition().duration(200).style("opacity", 0);
-            // popup.style("display", "none");
+            popup.transition().duration(200).style("opacity", 0);
+            popup.style("display", "none");
         }
         
     })
-    // .on("mousemove", function(e, d) { // when moving mouse, move popup with it
-    //     const virtualEl = {
-    //         getBoundingClientRect() {
-    //             return {
-    //                 width: 0,
-    //                 height: 0,
-    //                 x: e.clientX,
-    //                 y: e.clientY,
-    //                 top: e.clientY,
-    //                 left: e.clientX,
-    //                 right: e.clientX,
-    //                 bottom: e.clientY,
-    //             };
-    //         },
-    //     };
-
-    //     FloatingUIDOM.computePosition(virtualEl, popupEl, {
-    //         placement: 'top',
-    //         middleware: [
-    //             FloatingUIDOM.offset(5),
-    //             FloatingUIDOM.autoPlacement(),
-    //             FloatingUIDOM.shift({padding: 8}),
-    //             FloatingUIDOM.arrow({element: document.getElementById("arrow")})
-    //         ]
-    //     }).then(({x, y, placement, middlewareData}) => {
-    //         Object.assign(popupEl.style, {
-    //             left: `${x}px`,
-    //             top: `${y}px`,
-    //         });
-            
-    //         const {x: arrowX, y: arrowY} = middlewareData.arrow;
-            
-    //         const staticSide = {
-    //             top: 'bottom',
-    //             right: 'left',
-    //             bottom: 'top',
-    //             left: 'right',
-    //         }[placement.split('-')[0]];
-            
-    //         Object.assign(document.getElementById("arrow").style, {
-    //             left: arrowX != null ? `${arrowX}px` : '',
-    //             top: arrowY != null ? `${arrowY}px` : '',
-    //             right: '',
-    //             bottom: '',
-    //             [staticSide]: '-4px',
-    //         });
-    //     });
-    // })
+    .on("mousemove", function(e, d) { // when moving mouse, move popup with it
+        popup.style("left", (e.pageX + 10) + "px")
+            .style("top", (e.pageY - 15) + "px");
+    })
     .on("mouseout", function(e, d) { // when mousing out of an element
         d3.select(this).classed("hover", false) // remove the class
-        // popup.transition().duration(200).style("opacity", 0);
-        // popup.style("display", "none");
+        popup.transition().duration(200).style("opacity", 0);
+        popup.style("display", "none");
 
     })
     .on("click", function (e, d) { // on click, fill popup information and show
