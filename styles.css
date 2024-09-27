@@ -15,7 +15,7 @@ svg {
     width: 100%;
     /* background-color: lightblue; */
     flex-wrap: wrap;
-    height: 100vh;
+    /* height: 100vh; */
 }
 
 form {
@@ -48,8 +48,8 @@ form {
 
 /* info box styles */
 #info-box {
-    background-color: #fff;
-    opacity: 0;
+    background-color: #92d050;
+    /* opacity: 0; */
     margin: 1rem;
     padding: 1rem;
 }
@@ -131,4 +131,12 @@ form wa-button {
 
 .hidden, #vote-choice {
     display: none;
+}
+
+.centered {
+    text-align: center;
+}
+
+g text {
+    pointer-events: none;
 }

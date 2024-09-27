@@ -1,4 +1,5 @@
 // import {geoNaturalEarth1} from "https://cdn.skypack.dev/d3-geo-projection@4";
+import * as turf from 'https://cdn.jsdelivr.net/npm/@turf/turf@7.0.0/+esm';
 
 async function loadData() {
     // load data file
@@ -121,16 +122,6 @@ function drawMap(data) {
         .append('g')
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-            
-    // // Add border around the entire map
-    // svg.append("rect")
-    //     .attr("x", 0)
-    //     .attr("y", 0)
-    //     .attr("width", width)
-    //     .attr("height", height)
-    //     .attr("fill", "none")  // No fill
-    //     .attr("stroke", "black")  // Black border
-    //     .attr("stroke-width", 2);  // Border thickness
 
     // var oceanBoundary = svg.append("g")
     //     .selectAll("path")  // select all the paths (that don't exist yet)
@@ -155,99 +146,134 @@ function drawMap(data) {
     
     // create and append a new SVG g element to the SVG
     var continentBoundary = svg.append("g")
-    .selectAll("path")  // select all the paths (that don't exist yet)
-    .data(continentsGeojson.features) // use the GeoJSON data
-    .enter()  // enter the selection
-    .append("path")  // append new path elements for each data feature
-    .attr("d", path)  // give each path a d attribute value
-    .attr("data-continent", (d) => {return d.properties.CONTINENT})
-    .classed("continent-poly", true)
-    .attr("fill", (d, i) => {
-        let data = continentData.find(x => x["name"] == d.properties.CONTINENT);
-        return data?.color || "#999";
-    })
-    .on("mouseover", function(e, d) {  // when mousing over an element
-        
-        let props = continentData.find(x => x["name"] == d.properties.CONTINENT);
-        
-        if (props != undefined && props["name"] != "Antarctica") {
-            this.style.cursor = 'pointer';
-            d3.select(this).classed("hover", true) // select it and add a class name
+        .selectAll("path")  // select all the paths (that don't exist yet)
+        .data(continentsGeojson.features) // use the GeoJSON data
+        .enter()  // enter the selection
+        .append("path")  // append new path elements for each data feature
+        .attr("d", path)  // give each path a d attribute value
+        .attr("data-continent", (d) => {return d.properties.CONTINENT})
+        .classed("continent-poly", true)
+        .attr("fill", (d, i) => {
+            let data = continentData.find(x => x["name"] == d.properties.CONTINENT);
+            return data?.color || "#999";
+        })
+        .on("mouseover", function(e, d) {  // when mousing over an element
+            
+            let props = continentData.find(x => x["name"] == d.properties.CONTINENT);
+            
+            if (props != undefined && props["name"] != "Antarctica") {
+                this.style.cursor = 'pointer';
+                d3.select(this).classed("hover", true) // select it and add a class name
 
-            let popupHTML = '';
+                let popupHTML = '';
 
-            if (!props["votable"]) {
+                if (!props["votable"]) {
 
-                popupHTML += `<img width="200px" src="./images/${props["image"]}" />`
-                popupHTML += `<p>${props["title"]}</p>`
+                    popupHTML += `<img width="200px" src="./images/${props["image"]}" />`
+                    popupHTML += `<p>${props["title"]}</p>`
+                } else {
+
+                    popupHTML += `<p>Click to select ${props["name"]}</p>`;
+                }
+                
+                popup.html(popupHTML)
+                .style("left", (e.pageX + 10) + "px")
+                .style("top", (e.pageY - 15) + "px");
+
+                popup.style("display", "block");
+                
+                popup.transition().duration(200).style("opacity", .95 );   // make tooltip visible and update info
+                
             } else {
-
-                popupHTML += `<p>Click to select ${props["name"]}</p>`;
+                popup.transition().duration(200).style("opacity", 0);
+                popup.style("display", "none");
             }
             
-            popup.html(popupHTML)
-            .style("left", (e.pageX + 10) + "px")
-            .style("top", (e.pageY - 15) + "px");
-
-            popup.style("display", "block");
-            
-            popup.transition().duration(200).style("opacity", .95 );   // make tooltip visible and update info
-            
-        } else {
+        })
+        .on("mousemove", function(e, d) { // when moving mouse, move popup with it
+            popup.style("left", (e.pageX + 10) + "px")
+                .style("top", (e.pageY - 15) + "px");
+        })
+        .on("mouseout", function(e, d) { // when mousing out of an element
+            d3.select(this).classed("hover", false) // remove the class
             popup.transition().duration(200).style("opacity", 0);
             popup.style("display", "none");
-        }
-        
-    })
-    .on("mousemove", function(e, d) { // when moving mouse, move popup with it
-        popup.style("left", (e.pageX + 10) + "px")
-            .style("top", (e.pageY - 15) + "px");
-    })
-    .on("mouseout", function(e, d) { // when mousing out of an element
-        d3.select(this).classed("hover", false) // remove the class
-        popup.transition().duration(200).style("opacity", 0);
-        popup.style("display", "none");
 
-    })
-    .on("click", function (e, d) { // on click, fill popup information and show
-        
-        e.stopPropagation();
-        
-        let props = continentData.find(x => x["name"] == d.properties.CONTINENT);
-        
-        if (props != undefined && props.name != "Antarctica") {
-            if (selected != null) {
-                selected.classed("selected", false) // removed class from last selected
-            }
-            selected = d3.select(this);
-            d3.select(this).classed("selected", true).raise(); // select it and add a class name
+        })
+        .on("click", function (e, d) { // on click, fill popup information and show
+            
+            e.stopPropagation();
+            
+            let props = continentData.find(x => x["name"] == d.properties.CONTINENT);
+            
+            if (props != undefined && props.name != "Antarctica") {
+                if (selected != null) {
+                    selected.classed("selected", false) // removed class from last selected
+                }
+                selected = d3.select(this);
+                d3.select(this).classed("selected", true).raise(); // select it and add a class name
 
-            let infoHTML = "";
-            infoHTML += `<h3>${props['name']}</h3><hr>`;
+                let infoHTML = "";
+                infoHTML += `<h3>${props['name']}</h3><hr>`;
 
-            if (!props["votable"]) {
-                submitBtn.classed("hidden", true);
-                infoHTML += `<img width="200px" src="./images/${props["image"]}" />`
-                infoHTML += `<p>Read Marco's adventure in <a href="${props["link"]}" target="_blank">${props["title"]}</a></p>`
+                if (!props["votable"]) {
+                    submitBtn.classed("hidden", true);
+                    infoHTML += `<img width="200px" src="./images/${props["image"]}" />`
+                    infoHTML += `<p>Read Marco's adventure in <a href="${props["link"]}" target="_blank">${props["title"]}</a></p>`
+                } else {
+                    voteChoice.property("value",props["name"]);
+                    submitBtn.classed("hidden", false);
+                    infoHTML += `<p>Do you want to vote for Marco to travel to ${props["name"]}?</p>`;
+                }
+
+                infoContent.html(infoHTML);
+                
+                infoBox.transition().duration(200).style("opacity", 1);
+                
+            
+                
             } else {
-                voteChoice.property("value",props["name"]);
-                submitBtn.classed("hidden", false);
-                infoHTML += `<p>Do you want to vote for Marco to travel to ${props["name"]}?</p>`;
+                // popup.transition().duration(200).style("opacity", 0);
+                // popup.style("display", "none");
             }
+        })
 
-            infoContent.html(infoHTML);
-            
-            infoBox.transition().duration(200).style("opacity", 1);
-            
+    // svg element for labels
+    // const placeLabels = svg.append("g")
+    //     .selectAll("text")  // select all the paths (that don't exist yet)
+    //     .data(continentsGeojson.features) // use the GeoJSON data
+    //     .enter()  // enter the selection
+    //     .append("text")  // append new path elements for each data feature
+    //     .attr('text-anchor', 'middle')
+    //     .text((d) => d.properties.CONTINENT.replace(" ","/n"))  // give each path a d attribute value
+    //     .attr("transform", function(d, i) { 
+    //         const point = turf.point([d.properties.label[1], d.properties.label[0]])
            
+    //         return "translate(" + path.centroid(point)[0] + "," + path.centroid(point)[1] + ")";
+    //     });
+
+    continentsGeojson.features.forEach(x => {
+        const textArray = x.properties.CONTINENT.split(" ");
+        // Append the text to the SVG
+        const text = svg.append("text")
+            .attr('text-anchor', 'middle')
+            .attr("transform", function() { 
+                const point = turf.point([x.properties.label[1], x.properties.label[0]])
             
-        } else {
-            // popup.transition().duration(200).style("opacity", 0);
-            // popup.style("display", "none");
-        }
+                return "translate(" + path.centroid(point)[0] + "," + path.centroid(point)[1] + ")";
+            })
+            .attr("font-family", "Verdana")
+            .attr("font-size", 16);
+
+        // Append each word in a separate <tspan> with a new line
+        textArray.forEach((word, i) => {
+            text.append("tspan")
+            .attr("x", 10)  // Keep the same x position
+            .attr("dy", i === 0 ? 0 : 20)  // Offset the vertical position for each word
+            .text(word);
+        });
     })
 
-    
 
     // d3.select("form").on("submit", (e) => {
     //     e.preventDefault();
