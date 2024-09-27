@@ -140,3 +140,8 @@ form wa-button {
 g text {
     pointer-events: none;
 }
+
+#pie-chart {
+    margin-left: 50px;
+    margin-top: 15px;
+}

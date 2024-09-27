@@ -267,6 +267,8 @@ function drawMap(data) {
         e.preventDefault();
         console.log("form submitted");
 
+        e.classList.add("hidden");
+
         // Call the function to fetch data and create the pie chart
         fetchDataAndCreateChart();
         
