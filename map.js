@@ -367,7 +367,8 @@ function createPieChart(data) {
     // Append path for each arc and set the color
     arcs.append("path")
         .attr("d", arc)
-        .attr("fill", d => color(d.data[0]));
+        .attr("fill", d => color(d.data[0]))
+        .attr("stroke", "#fff");
 
     // Add text labels inside each arc
     arcs.append("text")
