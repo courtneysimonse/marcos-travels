@@ -323,8 +323,8 @@ async function fetchDataAndCreateChart() {
 // Function to create the pie chart
 function createPieChart(data) {
     // Set dimensions and radius of the pie chart
-    const width = 500;
-    const height = 500;
+    const width = 200;
+    const height = 200;
     const radius = Math.min(width, height) / 2;
 
     const colorMapping = {
