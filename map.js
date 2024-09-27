@@ -268,7 +268,7 @@ function drawMap(data) {
         console.log("form submitted");
 
         e.target.classList.add("hidden");
-        infoContent.classList.add("hidden");
+        infoContent.classed("hidden", true);
 
         // Call the function to fetch data and create the pie chart
         fetchDataAndCreateChart();
