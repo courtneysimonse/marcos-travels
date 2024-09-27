@@ -1,4 +1,4 @@
-import {geoNaturalEarth2} from "https://cdn.skypack.dev/d3-geo-projection@4";
+// import {geoNaturalEarth1} from "https://cdn.skypack.dev/d3-geo-projection@4";
 
 async function loadData() {
     // load data file
@@ -34,7 +34,7 @@ const continentData = [
         color: greyColor,
         votable: false,
         link: "https://a.co/d/4xBBBDi",
-        image: "cover-st-lucia.png",
+        image: "cover-st-lucia.jpg",
         title: "Marco's Travels: Sa ka fèt, Saint Lucia!"
     },
     {
@@ -76,46 +76,62 @@ function drawMap(data) {
         geometries: continentsJson.objects.continents.geometries
     });
 
-    const oceansGeojson = topojson.feature(oceansJson, {
-        type: "GeometryCollection",
-        geometries: oceansJson.objects.ocean.geometries
-    });
+    const bounds = d3.geoBounds(continentsGeojson);
+    const [[minLon, minLat], [maxLon, maxLat]] = bounds;
+
+    const geoWidth = maxLon - minLon;
+    const geoHeight = maxLat - minLat;
+
+    const aspectRatio = geoWidth / geoHeight;
+    console.log('GeoJSON Aspect Ratio:', aspectRatio);
+
+
+    // const oceansGeojson = topojson.feature(oceansJson, {
+    //     type: "GeometryCollection",
+    //     geometries: oceansJson.objects.ocean.geometries
+    // });
     
     const margin = {
-        top: 10,
+        top: 0,
         right: 10,
-        bottom: 10,
+        bottom: 0,
         left: 10
     };
     
     const width = document.getElementById('map').clientWidth - margin.left - margin.right;
-    const height = document.getElementById('map').clientHeight - margin.top - margin.bottom;
+    const height = width / aspectRatio;  // Adjust height based on the aspect ratio    
     
-    const projection = geoNaturalEarth2()
-        .fitExtent([[10,10],[width-10,height-10]], continentsGeojson)
+    const projection = d3.geoNaturalEarth1()
+        .scale(width / 1.5)  // Adjust scale based on width
+        .center([0, -45])    // Move the map center upwards
+        .translate([width / 2, height / 2])  // Center on the SVG
+        .fitExtent([[10, 0], [width - 10, height - 50]], continentsGeojson);  // Adjust fit
+
     
     // Prepare SVG path and color, import the
     // effect from above projection.
     const path = d3.geoPath()
-    .projection(projection);
+        .projection(projection);
 
     // select the map element
     var svg = d3.select("#map")
-    .append("svg")  // append a new SVG element
-    .attr(
-        'viewBox',
-        // `0 0 100 100`
-        `0 0 ${width + margin.left + margin.right} ${
-            height + margin.top + margin.bottom
-        }`
-        )
-    .attr('preserveAspectRatio', 'xMidYMin meet')
-    .append('g')
-    .attr(
-        'transform',
-        'translate(' + margin.left + ',' + margin.top + ')'
-        );
-        
+        .append("svg")
+        .attr('viewBox', `0 0 ${width + margin.left + margin.right} ${height - 50 + margin.top + margin.bottom}`)  // Adjust height in the viewBox
+        .attr('preserveAspectRatio', 'xMidYMin meet')
+        .append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+            
+    // // Add border around the entire map
+    // svg.append("rect")
+    //     .attr("x", 0)
+    //     .attr("y", 0)
+    //     .attr("width", width)
+    //     .attr("height", height)
+    //     .attr("fill", "none")  // No fill
+    //     .attr("stroke", "black")  // Black border
+    //     .attr("stroke-width", 2);  // Border thickness
+
     // var oceanBoundary = svg.append("g")
     //     .selectAll("path")  // select all the paths (that don't exist yet)
     //     .data(oceansGeojson.features) // use the GeoJSON data
@@ -148,14 +164,7 @@ function drawMap(data) {
     .classed("continent-poly", true)
     .attr("fill", (d, i) => {
         let data = continentData.find(x => x["name"] == d.properties.CONTINENT);
-        if (data == undefined) {
-            console.log(d);
-        } else if (data["color"]) {
-            return data["color"];
-        } else {
-            return "#999";
-        }
-        
+        return data?.color || "#999";
     })
     .on("mouseover", function(e, d) {  // when mousing over an element
         

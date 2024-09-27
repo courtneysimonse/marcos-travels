@@ -2,11 +2,18 @@ html, body {
     margin: 0;
     padding: 0;
 } 
+
+
+svg {
+    border: #333 solid 2px;
+    margin: 10px;
+    background-color: lightblue;
+}
   
 #map-container {
     display: flex;
     width: 100%;
-    background-color: lightblue;
+    /* background-color: lightblue; */
     flex-wrap: wrap;
     height: 100vh;
 }
