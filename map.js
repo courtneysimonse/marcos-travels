@@ -376,6 +376,7 @@ function createPieChart(data) {
     // Add text labels inside each arc
     arcs.append("text")
         .attr("transform", d => `translate(${arc.centroid(d)})`)
+        .attr("text-anchor", "middle")
         .text(d => {
             const percentage = ((d.data[1] / totalVotes) * 100).toFixed(0);
             return `${d.data[0]}: ${percentage}%`;
