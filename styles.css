@@ -4,7 +4,7 @@ html, body {
 } 
 
 
-svg {
+#map-svg {
     border: #333 solid 2px;
     margin: 10px;
     background-color: lightblue;
@@ -139,4 +139,9 @@ form wa-button {
 
 g text {
     pointer-events: none;
+}
+
+#pie-chart {
+    margin-left: 50px;
+    margin-top: 15px;
 }

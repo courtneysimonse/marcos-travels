@@ -84,7 +84,7 @@ function drawMap(data) {
     const geoHeight = maxLat - minLat;
 
     const aspectRatio = geoWidth / geoHeight;
-    console.log('GeoJSON Aspect Ratio:', aspectRatio);
+    // console.log('GeoJSON Aspect Ratio:', aspectRatio);
 
 
     // const oceansGeojson = topojson.feature(oceansJson, {
@@ -117,6 +117,7 @@ function drawMap(data) {
     // select the map element
     var svg = d3.select("#map")
         .append("svg")
+        .attr("id", "map-svg")
         .attr('viewBox', `0 0 ${width + margin.left + margin.right} ${height - 50 + margin.top + margin.bottom}`)  // Adjust height in the viewBox
         .attr('preserveAspectRatio', 'xMidYMin meet')
         .append('g')
@@ -238,19 +239,6 @@ function drawMap(data) {
             }
         })
 
-    // svg element for labels
-    // const placeLabels = svg.append("g")
-    //     .selectAll("text")  // select all the paths (that don't exist yet)
-    //     .data(continentsGeojson.features) // use the GeoJSON data
-    //     .enter()  // enter the selection
-    //     .append("text")  // append new path elements for each data feature
-    //     .attr('text-anchor', 'middle')
-    //     .text((d) => d.properties.CONTINENT.replace(" ","/n"))  // give each path a d attribute value
-    //     .attr("transform", function(d, i) { 
-    //         const point = turf.point([d.properties.label[1], d.properties.label[0]])
-           
-    //         return "translate(" + path.centroid(point)[0] + "," + path.centroid(point)[1] + ")";
-    //     });
 
     continentsGeojson.features.forEach(x => {
         const textArray = x.properties.CONTINENT.split(" ");
@@ -275,18 +263,36 @@ function drawMap(data) {
     })
 
 
-    // d3.select("form").on("submit", (e) => {
-    //     e.preventDefault();
-    //     console.log("form submitted");
+    d3.select("form").on("submit", async (e) => {
+        e.preventDefault();
+
+        e.target.classList.add("hidden");
+        infoContent.classed("hidden", true);
+        d3.select('h3.centered').classed("hidden", true)
+
+        const formData = new FormData(e.target);
+  
+        await fetch("/", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams(formData).toString(),
+        })
+
+        console.log("form submitted");
+
+        // Call the function to fetch data and create the pie chart
+        fetchDataAndCreateChart();
         
+    })
+
+    
+
+
+    // d3.select('body').on('click', () => {
+    //     if (selected != null) {
+    //         selected.classed("selected", false) // removed class from last selected
+    //     }
     // })
-
-
-    // // d3.select('body').on('click', () => {
-    // //     if (selected != null) {
-    // //         selected.classed("selected", false) // removed class from last selected
-    // //     }
-    // // })
 
  
 
@@ -302,4 +308,96 @@ function drawMap(data) {
     
         
 } // end drawMap
+
+
+// Function to fetch data and create the pie chart
+async function fetchDataAndCreateChart() {
+    // API URL
+    const apiUrl = "/.netlify/functions/api";
+
+    try {
+        // Fetch the data
+        const response = await fetch(apiUrl);
+        const choices = await response.json();
+
+        // Count occurrences of each choice
+        const choiceCount = choices.reduce((acc, choice) => {
+            acc[choice] = (acc[choice] || 0) + 1;
+            return acc;
+        }, {});
+
+        // Now create the pie chart with the fetched data
+        createPieChart(choiceCount);
+    } catch (error) {
+        console.error("Error fetching data:", error);
+    }
+}
+
+// Function to create the pie chart
+function createPieChart(data) {
+    // Set dimensions and radius of the pie chart
+    const width = 200;
+    const height = 200;
+    const radius = (Math.min(width, height) / 2);
+
+    const colorMapping = {
+        Africa: "#008627",   
+        Europe: "#cb111f",  
+        Oceania: "#f9d51f" 
+    };
+
+    // Create the color scale
+    const color = d3.scaleOrdinal()
+        .domain(Object.keys(data))
+        .range(Object.keys(data).map(choice => colorMapping[choice] || "#ccc"));
+
+    // Total number of votes
+    const totalVotes = Object.values(data).reduce((sum, count) => sum + count, 0);
+
+    // Create the pie function
+    const pie = d3.pie()
+        .value(d => d[1]); // Value comes from the data object
+
+    // Create the arc function
+    const arc = d3.arc()
+        .innerRadius(0) // Full pie chart (no hole in the middle)
+        .outerRadius(radius);
+
+    // Create an SVG group element for the pie chart
+    const svg = d3.select("#pie-chart")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", `translate(${width / 2}, ${height / 2})`);
+
+    // Create arcs and append them to the pie chart
+    const arcs = svg.selectAll(".arc")
+        .data(pie(Object.entries(data)))
+        .enter()
+        .append("g")
+        .attr("class", "arc");
+
+    // Append path for each arc and set the color
+    arcs.append("path")
+        .attr("d", arc)
+        .attr("fill", d => color(d.data[0]))
+        .attr("stroke", "#fff");
+
+    svg.selectAll("text")
+        .data(pie(Object.entries(data)))
+        .enter()
+        .append("text")
+        .attr("transform", d => `translate(${arc.centroid(d)})`)
+        .attr("text-anchor", "middle")
+        .text(d => {
+            const percentage = ((d.data[1] / totalVotes) * 100).toFixed(0);
+            return `${d.data[0]}: ${percentage}%`;
+        })
+        .style("fill", "#000");
+
+    d3.select('h3.centered')
+        .text(`Total Votes: ${totalVotes}`)
+        .classed("hidden", false)
+}
+
     
