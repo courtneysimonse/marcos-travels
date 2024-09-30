@@ -263,12 +263,21 @@ function drawMap(data) {
     })
 
 
-    d3.select("form").on("submit", (e) => {
+    d3.select("form").on("submit", async (e) => {
         e.preventDefault();
-        console.log("form submitted");
 
         e.target.classList.add("hidden");
         infoContent.classed("hidden", true);
+
+        const formData = new FormData(myForm);
+  
+        await fetch("/", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams(formData).toString(),
+        })
+
+        console.log("form submitted");
 
         // Call the function to fetch data and create the pie chart
         fetchDataAndCreateChart();
