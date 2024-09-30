@@ -268,8 +268,9 @@ function drawMap(data) {
 
         e.target.classList.add("hidden");
         infoContent.classed("hidden", true);
+        d3.select('h3.centered').classed("hidden", true)
 
-        const formData = new FormData(myForm);
+        const formData = new FormData(e.target);
   
         await fetch("/", {
             method: "POST",
