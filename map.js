@@ -84,7 +84,7 @@ function drawMap(data) {
     const geoHeight = maxLat - minLat;
 
     const aspectRatio = geoWidth / geoHeight;
-    console.log('GeoJSON Aspect Ratio:', aspectRatio);
+    // console.log('GeoJSON Aspect Ratio:', aspectRatio);
 
 
     // const oceansGeojson = topojson.feature(oceansJson, {
