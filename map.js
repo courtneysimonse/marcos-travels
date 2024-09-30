@@ -288,11 +288,11 @@ function drawMap(data) {
     
 
 
-    // // d3.select('body').on('click', () => {
-    // //     if (selected != null) {
-    // //         selected.classed("selected", false) // removed class from last selected
-    // //     }
-    // // })
+    // d3.select('body').on('click', () => {
+    //     if (selected != null) {
+    //         selected.classed("selected", false) // removed class from last selected
+    //     }
+    // })
 
  
 
@@ -313,7 +313,7 @@ function drawMap(data) {
 // Function to fetch data and create the pie chart
 async function fetchDataAndCreateChart() {
     // API URL
-    const apiUrl = "/.netlify/functions/api"; // Replace with your actual API URL
+    const apiUrl = "/.netlify/functions/api";
 
     try {
         // Fetch the data
@@ -383,8 +383,10 @@ function createPieChart(data) {
         .attr("fill", d => color(d.data[0]))
         .attr("stroke", "#fff");
 
-    // Add text labels inside each arc
-    arcs.append("text")
+    svg.selectAll("text")
+        .data(pie(Object.entries(data)))
+        .enter()
+        .append("text")
         .attr("transform", d => `translate(${arc.centroid(d)})`)
         .attr("text-anchor", "middle")
         .text(d => {
