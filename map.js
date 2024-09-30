@@ -338,7 +338,7 @@ function createPieChart(data) {
     // Set dimensions and radius of the pie chart
     const width = 200;
     const height = 200;
-    const radius = Math.min(width, height) / 2;
+    const radius = (Math.min(width, height) / 2);
 
     const colorMapping = {
         Africa: "#008627",   
@@ -394,6 +394,10 @@ function createPieChart(data) {
             return `${d.data[0]}: ${percentage}%`;
         })
         .style("fill", "#000");
+
+    d3.select('h3.centered')
+        .text(`Total Votes: ${totalVotes}`)
+        .classed("hidden", false)
 }
 
     
