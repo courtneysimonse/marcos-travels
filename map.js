@@ -23,7 +23,8 @@ const continentData = [
         votable: false,
         link: "https://a.co/d/0zOc7mX",
         image: "cover-namaste-india.jpg",
-        title: "Marco's Travels: Namaste, India!"
+        title: "Marco's Travels: Namaste, India!",
+        country: "india"
     },
     {
         name: "Africa",
@@ -36,7 +37,8 @@ const continentData = [
         votable: false,
         link: "https://a.co/d/4xBBBDi",
         image: "cover-st-lucia.jpg",
-        title: "Marco's Travels: Sa ka fèt, Saint Lucia!"
+        title: "Marco's Travels: Sa ka fèt, Saint Lucia!",
+        country: "St. Lucia"
     },
     {
         name: "South America",
@@ -44,7 +46,8 @@ const continentData = [
         votable: false,
         link: "https://a.co/d/h69vXyV",
         image: "cover-hello-brazil.jpg",
-        title: "Marco's Travels: Hello, Brazil!​"
+        title: "Marco's Travels: Hello, Brazil!",
+        country: "Brazil"
     },
     {
         name: "Europe",
@@ -52,7 +55,7 @@ const continentData = [
         votable: true
     },
     {
-        name: "Oceania",
+        name: "Australia/Oceania",
         color: "#f9d51f",
         votable: true
     },
@@ -170,7 +173,7 @@ function drawMap(data) {
 
                 if (!props["votable"]) {
 
-                    popupHTML += `<img width="200px" src="./images/${props["image"]}" />`
+                    // popupHTML += `<img width="200px" src="./images/${props["image"]}" />`
                     popupHTML += `<p>${props["title"]}</p>`
                 } else {
 
@@ -219,12 +222,13 @@ function drawMap(data) {
 
                 if (!props["votable"]) {
                     submitBtn.classed("hidden", true);
+                    infoHTML += `<p>Marco has already visited ${props["name"]} - ${props["country"]}`
                     infoHTML += `<img width="200px" src="./images/${props["image"]}" />`
                     infoHTML += `<p>Read Marco's adventure in <a href="${props["link"]}" target="_blank">${props["title"]}</a></p>`
                 } else {
                     voteChoice.property("value",props["name"]);
                     submitBtn.classed("hidden", false);
-                    infoHTML += `<p>Do you want to vote for Marco to travel to ${props["name"]}?</p>`;
+                    infoHTML += `<p>Vote for Marco to visit ${props["name"]}?</p>`;
                 }
 
                 infoContent.html(infoHTML);

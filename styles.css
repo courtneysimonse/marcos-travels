@@ -41,7 +41,7 @@ form {
     }
 
     #info-box {
-        flex-basis: 300px;
+        flex-basis: 200px;
     }
 
 }
@@ -49,9 +49,10 @@ form {
 /* info box styles */
 #info-box {
     background-color: #92d050;
-    /* opacity: 0; */
-    margin: 1rem;
-    padding: 1rem;
+    border: #92d050 solid 2px;
+    padding: 0px;
+    margin: 10px;
+    margin-bottom: 13px;
 }
 
 #info-box h3 {
