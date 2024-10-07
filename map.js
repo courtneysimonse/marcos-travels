@@ -24,7 +24,7 @@ const continentData = [
         link: "https://a.co/d/0zOc7mX",
         image: "cover-namaste-india.jpg",
         title: "Marco's Travels: Namaste, India!",
-        country: "india"
+        country: "India"
     },
     {
         name: "Africa",
@@ -222,9 +222,11 @@ function drawMap(data) {
 
                 if (!props["votable"]) {
                     submitBtn.classed("hidden", true);
-                    infoHTML += `<p>Marco has already visited ${props["name"]} - ${props["country"]}`
-                    infoHTML += `<img width="200px" src="./images/${props["image"]}" />`
-                    infoHTML += `<p>Read Marco's adventure in <a href="${props["link"]}" target="_blank">${props["title"]}</a></p>`
+                    infoHTML += `<p>Marco has already visited ${props["name"]} - ${props["country"]}</p>`
+                    infoHTML += `<img src="./images/${props["image"]}" />`
+                    infoHTML += `<p>Purchase your copy of</p>
+                        <h3 class="centered">${props["title"]}</h3>
+                        <p>from <a href="${props["link"]}" target="_blank">Amazon</a></p>`
                 } else {
                     voteChoice.property("value",props["name"]);
                     submitBtn.classed("hidden", false);
@@ -232,10 +234,11 @@ function drawMap(data) {
                 }
 
                 infoContent.html(infoHTML);
+
+                infoBox.classed("hidden", false);
                 
                 infoBox.transition().duration(200).style("opacity", 1);
                 
-            
                 
             } else {
                 // popup.transition().duration(200).style("opacity", 0);
@@ -271,8 +274,8 @@ function drawMap(data) {
         e.preventDefault();
 
         e.target.classList.add("hidden");
-        infoContent.classed("hidden", true);
-        d3.select('h3.centered').classed("hidden", true)
+        // infoContent.classed("hidden", true);
+        // d3.select('h3.centered').classed("hidden", true);
 
         const formData = new FormData(e.target);
   
@@ -286,6 +289,7 @@ function drawMap(data) {
 
         // Call the function to fetch data and create the pie chart
         fetchDataAndCreateChart();
+        d3.selectAll('.results').classed("hidden", false);
         
     })
 
@@ -340,8 +344,8 @@ async function fetchDataAndCreateChart() {
 // Function to create the pie chart
 function createPieChart(data) {
     // Set dimensions and radius of the pie chart
-    const width = 200;
-    const height = 200;
+    const width = 100;
+    const height = 110;
     const radius = (Math.min(width, height) / 2);
 
     const colorMapping = {
@@ -369,10 +373,10 @@ function createPieChart(data) {
 
     // Create an SVG group element for the pie chart
     const svg = d3.select("#pie-chart")
-        .attr("width", width)
-        .attr("height", height)
+        .attr("width", width * 2.2)
+        .attr("height", height * 1.2)
         .append("g")
-        .attr("transform", `translate(${width / 2}, ${height / 2})`);
+        .attr("transform", `translate(${(width / 2) + 50}, ${height / 2})`);
 
     // Create arcs and append them to the pie chart
     const arcs = svg.selectAll(".arc")
@@ -391,17 +395,36 @@ function createPieChart(data) {
         .data(pie(Object.entries(data)))
         .enter()
         .append("text")
-        .attr("transform", d => `translate(${arc.centroid(d)})`)
+        .attr("transform", d => {
+            console.log(d);
+            console.log(arc.centroid(d));
+
+            const translate = [0, 0];
+
+            if (arc.centroid(d)[0] > 0) {
+                translate[0] = arc.centroid(d)[0] + 50;
+            } else {
+                translate[0] = arc.centroid(d)[0] - 50;
+            }
+
+            if (arc.centroid(d)[1] > 0) {
+                translate[1] = arc.centroid(d)[1] + 20;
+            } else {
+                translate[1] = arc.centroid(d)[1] - 20;
+            }
+            
+            return `translate(${translate[0]}, ${translate[1]})`;
+        })
         .attr("text-anchor", "middle")
         .text(d => {
             const percentage = ((d.data[1] / totalVotes) * 100).toFixed(0);
             return `${d.data[0]}: ${percentage}%`;
         })
-        .style("fill", "#000");
+        .style("fill", "#000")
+        .style("font-size", "7pt");
 
-    d3.select('h3.centered')
+    d3.select('#total-votes')
         .text(`Total Votes: ${totalVotes}`)
-        .classed("hidden", false)
 }
 
     

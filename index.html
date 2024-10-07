@@ -22,7 +22,7 @@
       <!-- map added to a div with id "map" -->
       <div id="map"></div>
       <!-- poll info box -->
-      <div id="info-box">
+      <div id="info-box" class="hidden">
         <div id="info-content"></div>
         <form 
           class="voting-form" 
@@ -34,7 +34,9 @@
             <input id="vote-choice" type="text" name="choice" />
             <wa-button class="btn-submit hidden" type="submit">Yes</wa-button>
         </form>
-        <svg id="pie-chart"></svg>
+        <h3 class="underlined hidden results">Results</h3>
+        <h3 id="total-votes" class="hidden results"></h4>
+        <svg class="hidden results" id="pie-chart"></svg>
       </div>
     </div>
 
