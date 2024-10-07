@@ -4,9 +4,11 @@ import * as turf from 'https://cdn.jsdelivr.net/npm/@turf/turf@7.0.0/+esm';
 async function loadData() {
     // load data file
     const continentsJson = await d3.json("./data/continents.json");
-    const oceansJson = await d3.json("./data/ocean.json");
+    // const oceansJson = await d3.json("./data/ocean.json");
 
-    return [continentsJson, oceansJson]
+    return [continentsJson
+        // , oceansJson
+    ]
 }
 
 // function fired if there is an error
@@ -55,7 +57,7 @@ const continentData = [
         votable: true
     },
     {
-        name: "Australia/Oceania",
+        name: "Australia/ Oceania",
         color: "#f9d51f",
         votable: true
     },
@@ -73,7 +75,7 @@ drawMap(data);
 function drawMap(data) {
 
     const continentsJson = data[0];
-    const oceansJson = data[1];
+    // const oceansJson = data[1];
     
     const continentsGeojson = topojson.feature(continentsJson, {
         type: "GeometryCollection",
@@ -97,19 +99,19 @@ function drawMap(data) {
     
     const margin = {
         top: 0,
-        right: 10,
+        right: 0,
         bottom: 0,
-        left: 10
+        left: 0
     };
     
     const width = document.getElementById('map').clientWidth - margin.left - margin.right;
     const height = width / aspectRatio;  // Adjust height based on the aspect ratio    
     
     const projection = d3.geoNaturalEarth1()
-        .scale(width / 1.5)  // Adjust scale based on width
-        .center([0, -45])    // Move the map center upwards
+        // .scale(width)  // Adjust scale based on width
+        // .center([0, -45])    // Move the map center upwards
         .translate([width / 2, height / 2])  // Center on the SVG
-        .fitExtent([[10, 0], [width - 10, height - 50]], continentsGeojson);  // Adjust fit
+        .fitExtent([[0, 0], [width, height - 50]], continentsGeojson);  // Adjust fit
 
     
     // Prepare SVG path and color, import the
@@ -139,7 +141,7 @@ function drawMap(data) {
     
     // select popup element
     var popup = d3.select("#popup");
-    var popupEl = document.getElementById("popup");
+    // var popupEl = document.getElementById("popup");
 
     var infoBox = d3.select("#info-box");
     var infoContent = d3.select("#info-content");
@@ -251,20 +253,27 @@ function drawMap(data) {
         const textArray = x.properties.CONTINENT.split(" ");
         // Append the text to the SVG
         const text = svg.append("text")
+            .classed("map-label", true)
             .attr('text-anchor', 'middle')
             .attr("transform", function() { 
-                const point = turf.point([x.properties.label[1], x.properties.label[0]])
+                const point = {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [x.properties.label[1], x.properties.label[0]]
+                    }
+                };
             
                 return "translate(" + path.centroid(point)[0] + "," + path.centroid(point)[1] + ")";
             })
             .attr("font-family", "Verdana")
-            .attr("font-size", 16);
+            .attr("font-size", 14);
 
         // Append each word in a separate <tspan> with a new line
         textArray.forEach((word, i) => {
             text.append("tspan")
             .attr("x", 10)  // Keep the same x position
-            .attr("dy", i === 0 ? 0 : 20)  // Offset the vertical position for each word
+            .attr("dy", i === 0 ? 0 : 16)  // Offset the vertical position for each word
             .text(word);
         });
     })
@@ -396,8 +405,6 @@ function createPieChart(data) {
         .enter()
         .append("text")
         .attr("transform", d => {
-            console.log(d);
-            console.log(arc.centroid(d));
 
             const translate = [0, 0];
 

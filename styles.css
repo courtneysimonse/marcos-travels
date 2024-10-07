@@ -3,7 +3,6 @@ html, body {
     padding: 0;
 } 
 
-
 #map-svg {
     border: #333 solid 2px;
     margin: 10px;
@@ -22,6 +21,15 @@ form {
     display: flex;
 }
 
+/* info box styles */
+#info-box {
+    background-color: #92d050;
+    border: #92d050 solid 2px;
+    padding: 10px;
+    margin: 10px;
+    margin-bottom: 13px;
+}
+
 @media (max-width: 768px) {
     #map {
         flex-basis: 100%;
@@ -29,7 +37,12 @@ form {
 
     #info-box {
         flex-basis: 85%;
-        margin: auto;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .map-label {
+        font-size: 9px;
     }
 
 }
@@ -44,15 +57,6 @@ form {
         flex-basis: 220px;
     }
 
-}
-
-/* info box styles */
-#info-box {
-    background-color: #92d050;
-    border: #92d050 solid 2px;
-    padding: 10px;
-    margin: 10px;
-    margin-bottom: 13px;
 }
 
 #info-box h3 {
