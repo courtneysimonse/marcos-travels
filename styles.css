@@ -1,6 +1,7 @@
 html, body {
     margin: 0;
     padding: 0;
+    font-family: 'franklin-gothic-condensed', 'Arial Narrow', sans-serif;
 } 
 
 #map-svg {
@@ -23,8 +24,8 @@ form {
 
 /* info box styles */
 #info-box {
-    background-color: #92d050;
-    border: #92d050 solid 2px;
+    background-color: #80e2df;
+    border: #80e2df solid 2px;
     padding: 10px;
     margin: 10px;
     margin-bottom: 13px;
@@ -86,7 +87,7 @@ form {
 }
 
 #info-box hr {
-    color: red;
+    color: #1e3864;
 }
 
 form wa-button {

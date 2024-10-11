@@ -1,0 +1,42 @@
+@font-face {
+    font-family:'franklin-gothic-condensed';
+    src:url(https://use.typekit.net/af/d2a6aa/00000000000000007735bbce/30/l?subset_id=2&fvd=n4&v=3) format("woff2"),
+    url(https://use.typekit.net/af/d2a6aa/00000000000000007735bbce/30/d?subset_id=2&fvd=n4&v=3) format("woff"),
+    url(https://use.typekit.net/af/d2a6aa/00000000000000007735bbce/30/a?subset_id=2&fvd=n4&v=3) format("opentype");
+    font-weight:400;
+    font-style:normal;
+    font-stretch:normal;
+    font-display:auto;
+  }
+  @font-face {
+    font-family:'franklin-gothic-condensed';
+    src:url(https://use.typekit.net/af/61c5e6/00000000000000007735bbd5/30/l?subset_id=2&fvd=n6&v=3) format("woff2"),
+    url(https://use.typekit.net/af/61c5e6/00000000000000007735bbd5/30/d?subset_id=2&fvd=n6&v=3) format("woff"),
+    url(https://use.typekit.net/af/61c5e6/00000000000000007735bbd5/30/a?subset_id=2&fvd=n6&v=3) format("opentype");
+    font-weight:600;
+    font-style:normal;
+    font-stretch:normal;
+    font-display:auto;
+  }
+  @font-face {
+    font-family:'franklin-gothic-condensed';
+    src:url(https://use.typekit.net/af/c71767/00000000000000007735bbd6/30/l?subset_id=2&fvd=i4&v=3) format("woff2"),
+    url(https://use.typekit.net/af/c71767/00000000000000007735bbd6/30/d?subset_id=2&fvd=i4&v=3) format("woff"),
+    url(https://use.typekit.net/af/c71767/00000000000000007735bbd6/30/a?subset_id=2&fvd=i4&v=3) format("opentype");
+    font-weight:400;
+    font-style:italic;
+    font-stretch:normal;
+    font-display:auto;
+  }
+  @font-face {
+    font-family:'franklin-gothic-condensed';
+    src:url(https://use.typekit.net/af/2cfda4/00000000000000007735bbd8/30/l?subset_id=2&fvd=i6&v=3) format("woff2"),
+    url(https://use.typekit.net/af/2cfda4/00000000000000007735bbd8/30/d?subset_id=2&fvd=i6&v=3) format("woff"),
+    url(https://use.typekit.net/af/2cfda4/00000000000000007735bbd8/30/a?subset_id=2&fvd=i6&v=3) format("opentype");
+    font-weight:600;
+    font-style:italic;
+    font-stretch:normal;
+    font-display:auto;
+  }
+  
+

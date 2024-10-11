@@ -69,6 +69,8 @@ const continentData = [
 ]
 
 const data = await loadData();
+await fetchDataAndCreateChart();
+d3.selectAll('.results').classed("hidden", false);
 drawMap(data);
 
 // accepts the data as a parameter statesData
@@ -83,6 +85,7 @@ function drawMap(data) {
     });
 
     const bounds = d3.geoBounds(continentsGeojson);
+    console.log('Geo Bounds:', bounds);
     const [[minLon, minLat], [maxLon, maxLat]] = bounds;
 
     const geoWidth = maxLon - minLon;
@@ -97,36 +100,43 @@ function drawMap(data) {
     //     geometries: oceansJson.objects.ocean.geometries
     // });
     
-    const margin = {
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0
-    };
+    // const margin = {
+    //     top: 0,
+    //     right: 0,
+    //     bottom: 0,
+    //     left: 0
+    // };
     
-    const width = document.getElementById('map').clientWidth - margin.left - margin.right;
+    const width = document.getElementById('map').clientWidth;
+    //  - margin.left - margin.right;
     const height = width / aspectRatio;  // Adjust height based on the aspect ratio    
-    
+    console.log('SVG Width:', width);
+
     const projection = d3.geoNaturalEarth1()
         // .scale(width)  // Adjust scale based on width
         // .center([0, -45])    // Move the map center upwards
-        .translate([width / 2, height / 2])  // Center on the SVG
-        .fitExtent([[0, 0], [width, height - 50]], continentsGeojson);  // Adjust fit
-
+        // .translate([width / 2, height / 2])  // Center on the SVG
+        .fitExtent([[0, 0], [width, height]], continentsGeojson)  // Adjust fit
     
+
     // Prepare SVG path and color, import the
     // effect from above projection.
     const path = d3.geoPath()
         .projection(projection);
 
+    console.log(width);
+    
+    console.log(projection([170,0]));
+    
+
     // select the map element
     var svg = d3.select("#map")
         .append("svg")
         .attr("id", "map-svg")
-        .attr('viewBox', `0 0 ${width + margin.left + margin.right} ${height - 50 + margin.top + margin.bottom}`)  // Adjust height in the viewBox
-        .attr('preserveAspectRatio', 'xMidYMin meet')
+        .attr('viewBox', `${projection([-162,0])[0]} 0 ${projection([165,0])[0]} ${height}`)  // Adjust height in the viewBox
+        .attr('preserveAspectRatio', 'xMidYMid meet')
         .append('g')
-        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+        // .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
 
     // var oceanBoundary = svg.append("g")
@@ -232,7 +242,7 @@ function drawMap(data) {
                 } else {
                     voteChoice.property("value",props["name"]);
                     submitBtn.classed("hidden", false);
-                    infoHTML += `<p>Vote for Marco to visit ${props["name"]}?</p>`;
+                    infoHTML += `<p class="vote-question">Vote for Marco to visit ${props["name"]}?</p>`;
                 }
 
                 infoContent.html(infoHTML);
@@ -266,7 +276,7 @@ function drawMap(data) {
             
                 return "translate(" + path.centroid(point)[0] + "," + path.centroid(point)[1] + ")";
             })
-            .attr("font-family", "Verdana")
+            .attr("font-family", "franklin-gothic-condensed")
             .attr("font-size", 14);
 
         // Append each word in a separate <tspan> with a new line
@@ -281,6 +291,22 @@ function drawMap(data) {
 
     d3.select("form").on("submit", async (e) => {
         e.preventDefault();
+
+        const lastSubmission = localStorage.getItem('formSubmissionDate');
+        const now = new Date().getTime();
+
+        if (lastSubmission) {
+            const timeElapsed = now - lastSubmission;
+            const oneDay = 24 * 60 * 60 * 1000; // Milliseconds in a day
+      
+            if (timeElapsed < oneDay) {
+              alert('You have already submitted the form today. Please try again tomorrow.');
+              return;
+            }
+        }
+
+        // If no submission or it's been more than a day, allow submission
+        localStorage.setItem('formSubmissionDate', now);
 
         e.target.classList.add("hidden");
         // infoContent.classed("hidden", true);
@@ -297,7 +323,7 @@ function drawMap(data) {
         console.log("form submitted");
 
         // Call the function to fetch data and create the pie chart
-        fetchDataAndCreateChart();
+        await fetchDataAndCreateChart();
         d3.selectAll('.results').classed("hidden", false);
         
     })
@@ -380,6 +406,7 @@ function createPieChart(data) {
         .innerRadius(0) // Full pie chart (no hole in the middle)
         .outerRadius(radius);
 
+    d3.select("#pie-chart > *").remove()
     // Create an SVG group element for the pie chart
     const svg = d3.select("#pie-chart")
         .attr("width", width * 2.2)
@@ -428,10 +455,11 @@ function createPieChart(data) {
             return `${d.data[0]}: ${percentage}%`;
         })
         .style("fill", "#000")
-        .style("font-size", "7pt");
+        .style("font-size", "7pt")
+        .style("font-family", "franklin-gothic-condensed");
 
     d3.select('#total-votes')
-        .text(`Total Votes: ${totalVotes}`)
+        .text(`Total Votes: ${totalVotes}`);
 }
 
     
