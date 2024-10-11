@@ -412,7 +412,7 @@ function createPieChart(data) {
         .attr("width", width * 2.2)
         .attr("height", height * 1.2)
         .append("g")
-        .attr("transform", `translate(${(width / 2) + 50}, ${height / 2})`);
+        .attr("transform", `translate(${(width / 2) + 60}, ${height / 2})`);
 
     // Create arcs and append them to the pie chart
     const arcs = svg.selectAll(".arc")
