@@ -386,7 +386,7 @@ function createPieChart(data) {
     const colorMapping = {
         Africa: "#008627",   
         Europe: "#cb111f",  
-        Oceania: "#f9d51f" 
+        "Australia/ Oceania": "#f9d51f" 
     };
 
     // Create the color scale
