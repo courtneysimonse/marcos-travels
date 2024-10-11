@@ -4,9 +4,22 @@ html, body {
     font-family: 'franklin-gothic-condensed', 'Arial Narrow', sans-serif;
 } 
 
+h1, h3 {
+    margin: 0;
+}
+
+h3 {
+    margin-top: 28px;
+}
+
+h3.info-heading {
+    margin-top: 8px;
+    margin-bottom: 6px;
+}
+
 #map-svg {
     border: #333 solid 2px;
-    margin: 10px;
+    margin: 4px;
     background-color: lightblue;
 }
   
@@ -24,10 +37,10 @@ form {
 
 /* info box styles */
 #info-box {
-    background-color: #80e2df;
-    border: #80e2df solid 2px;
+    /* background-color: #80e2df;
+    border: #80e2df solid 2px; */
     padding: 10px;
-    margin: 10px;
+    margin: 4px;
     margin-bottom: 13px;
 }
 
@@ -55,7 +68,7 @@ form {
     }
 
     #info-box {
-        flex-basis: 220px;
+        flex-basis: 200px;
     }
 
 }
@@ -155,4 +168,9 @@ g text {
 
 .underlined {
     text-decoration: underline;
+}
+
+p#total-votes {
+    text-align: left;
+    padding-left: 0px;
 }

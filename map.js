@@ -70,7 +70,7 @@ const continentData = [
 
 const data = await loadData();
 await fetchDataAndCreateChart();
-d3.selectAll('.results').classed("hidden", false);
+// d3.selectAll('.results').classed("hidden", false);
 drawMap(data);
 
 // accepts the data as a parameter statesData
@@ -200,6 +200,18 @@ function drawMap(data) {
                 
                 popup.transition().duration(200).style("opacity", .95 );   // make tooltip visible and update info
                 
+            }  else if (props.name == "Antarctica") {
+                let popupHTML = '';
+                popupHTML += `<p>Antartica is not available for selection at this time.</p>`
+
+                
+                popup.html(popupHTML)
+                .style("left", (e.pageX + 10) + "px")
+                .style("top", (e.pageY - 15) + "px");
+
+                popup.style("display", "block");
+                
+                popup.transition().duration(200).style("opacity", .95 );   
             } else {
                 popup.transition().duration(200).style("opacity", 0);
                 popup.style("display", "none");
@@ -230,19 +242,21 @@ function drawMap(data) {
                 d3.select(this).classed("selected", true).raise(); // select it and add a class name
 
                 let infoHTML = "";
-                infoHTML += `<h3>${props['name']}</h3><hr>`;
+                infoHTML += `<h3 class="info-heading">${props['name']}</h3><hr>`;
 
                 if (!props["votable"]) {
+                    d3.selectAll('.results').classed("hidden", true);
                     submitBtn.classed("hidden", true);
                     infoHTML += `<p>Marco has already visited ${props["name"]} - ${props["country"]}</p>`
                     infoHTML += `<img src="./images/${props["image"]}" />`
                     infoHTML += `<p>Purchase your copy of</p>
-                        <h3 class="centered">${props["title"]}</h3>
+                        <h3 class="info-heading centered">${props["title"]}</h3>
                         <p>from <a href="${props["link"]}" target="_blank">Amazon</a></p>`
                 } else {
                     voteChoice.property("value",props["name"]);
                     submitBtn.classed("hidden", false);
-                    infoHTML += `<p class="vote-question">Vote for Marco to visit ${props["name"]}?</p>`;
+                    infoHTML += `<p class="vote-question">Vote for Marco to visit ${props["name"]}!</p>`;
+                    d3.selectAll('.results').classed("hidden", false);
                 }
 
                 infoContent.html(infoHTML);
@@ -283,7 +297,7 @@ function drawMap(data) {
         textArray.forEach((word, i) => {
             text.append("tspan")
             .attr("x", 10)  // Keep the same x position
-            .attr("dy", i === 0 ? 0 : 16)  // Offset the vertical position for each word
+            .attr("dy", i === 0 ? 0 : 10)  // Offset the vertical position for each word
             .text(word);
         });
     })
@@ -379,7 +393,7 @@ async function fetchDataAndCreateChart() {
 // Function to create the pie chart
 function createPieChart(data) {
     // Set dimensions and radius of the pie chart
-    const width = 100;
+    const width = 90;
     const height = 110;
     const radius = (Math.min(width, height) / 2);
 
@@ -409,10 +423,10 @@ function createPieChart(data) {
     d3.select("#pie-chart > *").remove()
     // Create an SVG group element for the pie chart
     const svg = d3.select("#pie-chart")
-        .attr("width", width * 2.2)
+        .attr("width", width * 2.3)
         .attr("height", height * 1.2)
         .append("g")
-        .attr("transform", `translate(${(width / 2) + 60}, ${height / 2})`);
+        .attr("transform", `translate(${(width / 2) + 66}, ${height / 2 + 10})`);
 
     // Create arcs and append them to the pie chart
     const arcs = svg.selectAll(".arc")
@@ -444,7 +458,7 @@ function createPieChart(data) {
             if (arc.centroid(d)[1] > 0) {
                 translate[1] = arc.centroid(d)[1] + 20;
             } else {
-                translate[1] = arc.centroid(d)[1] - 20;
+                translate[1] = arc.centroid(d)[1] - 25;
             }
             
             return `translate(${translate[0]}, ${translate[1]})`;
@@ -455,7 +469,7 @@ function createPieChart(data) {
             return `${d.data[0]}: ${percentage}%`;
         })
         .style("fill", "#000")
-        .style("font-size", "7pt")
+        .style("font-size", "8pt")
         .style("font-family", "franklin-gothic-condensed");
 
     d3.select('#total-votes')
