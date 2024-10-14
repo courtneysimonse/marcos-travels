@@ -109,8 +109,11 @@ function drawMap(data) {
     
     const width = document.getElementById('map').clientWidth;
     //  - margin.left - margin.right;
+    console.log(aspectRatio);
+    
     const height = width / aspectRatio;  // Adjust height based on the aspect ratio    
     console.log('SVG Width:', width);
+    console.log('SVG Height:', height);
 
     const projection = d3.geoNaturalEarth1()
         // .scale(width)  // Adjust scale based on width
@@ -123,8 +126,6 @@ function drawMap(data) {
     // effect from above projection.
     const path = d3.geoPath()
         .projection(projection);
-
-    console.log(width);
     
     console.log(projection([170,0]));
     
