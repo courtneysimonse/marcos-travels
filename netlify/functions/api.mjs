@@ -1,4 +1,17 @@
+const CORS_HEADERS = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers':
+      'Origin, X-Requested-With, Content-Type, Accept',
+  }
+
 export default async (req, context) => {
+    if (req.httpMethod === 'OPTIONS') {
+        return {
+            statusCode: 200,
+            headers: CORS_HEADERS,
+        }
+      }
+
     const apiKey = Netlify.env.get("API_TOKEN");
     const url = "https://api.netlify.com/api/v1/forms/66ef658b908fcc0008ef9ad5/submissions";
     try {
@@ -37,7 +50,13 @@ export default async (req, context) => {
         console.log("Choice percentages:", choicePercentages);
 
 
-        return new Response(JSON.stringify(choices));
+        return new Response(JSON.stringify(choices), {
+            status: 200,
+            headers: {
+                ...CORS_HEADERS,
+                'Content-Type': 'application/json',
+              }
+        });
     } catch (error) {
         console.error(error.message);
         return new Response("error");
