@@ -328,11 +328,13 @@ function drawMap(data) {
         // d3.select('h3.centered').classed("hidden", true);
 
         const formData = new FormData(e.target);
+        formData.append("form-name", "voting")
+        const reqBody = new URLSearchParams(formData);
   
-        await fetch("/", {
+        await fetch("https://marcos-travels.netlify.app/", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: new URLSearchParams(formData).toString(),
+            body: reqBody.toString(),
         })
 
         console.log("form submitted");
