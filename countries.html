@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Demo</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="https://early.webawesome.com/webawesome@3.0.0-alpha.2/dist/themes/default.css" />
+    <script type="module" src="https://early.webawesome.com/webawesome@3.0.0-alpha.2/dist/webawesome.loader.js"></script>
+
+    <link rel="stylesheet" href="/fonts/stylesheet.css" type="text/css" charset="utf-8" />
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+
+<body>
+
+  <h3 class="centered">Marco is ready for his next adventure!</h3>
+  <h1 class="centered">Click on the continent you would like Marco to visit next.</h1>
+
+    <div id="map-container">
+      <!-- map added to a div with id "map" -->
+      <div id="map"></div>
+      <!-- poll info box -->
+      <div id="info-box" class="hidden">
+        <div id="info-content"></div>
+        <form 
+          class="voting-form" 
+          name="country" 
+          method="POST" 
+          data-netlify="true"
+          action="/"
+          >
+            <input id="vote-choice" type="text" name="choice" />
+            <wa-button class="btn-submit hidden" type="submit">Vote</wa-button>
+        </form>
+        <h3 class="underlined hidden results">Results</h3>
+        <p id="total-votes" class="hidden results left"></p>
+        <svg class="hidden results" id="pie-chart"></svg>
+      </div>
+    </div>
+
+
+    <!-- empty popup -->
+    <div class="popup" role="tooltip" id="popup">
+    </div>
+
+
+  <!-- External libraries for map -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://unpkg.com/topojson@3.0.2/dist/topojson.js"></script>
+  <!-- <script src="https://unpkg.com/htl@0.3.1/dist/htl.min.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/@floating-ui/core@1.0.1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.0.4"></script>
+
+  <!-- Map script -->
+  <script type="module" src="map_countries.js"></script>
+</body>
+
+</html>
