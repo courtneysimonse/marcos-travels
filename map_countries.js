@@ -44,7 +44,7 @@ function drawMap(data) {
     const geoHeight = maxLat - minLat;
 
     const aspectRatio = geoWidth / geoHeight;
-    // console.log('GeoJSON Aspect Ratio:', aspectRatio);
+    console.log('GeoJSON Aspect Ratio:', aspectRatio);
 
 
     // const oceansGeojson = topojson.feature(oceansJson, {
@@ -59,13 +59,14 @@ function drawMap(data) {
     //     left: 0
     // };
     
-    const width = document.getElementById('map').clientWidth;
+    const height = document.getElementById('map').clientHeight;
     //  - margin.left - margin.right;
-    console.log(aspectRatio);
     
-    const height = width / aspectRatio;  // Adjust height based on the aspect ratio    
+    const width = height * aspectRatio;  // Adjust height based on the aspect ratio    
     console.log('SVG Width:', width);
     console.log('SVG Height:', height);
+
+    document.getElementById('map').style.width = width+"px";
 
     const projection = d3.geoNaturalEarth1()
         // .scale(width)  // Adjust scale based on width
@@ -86,8 +87,8 @@ function drawMap(data) {
     var svg = d3.select("#map")
         .append("svg")
         .attr("id", "map-svg")
-        .attr('viewBox', `${projection([-20,0])[0]} 0 ${projection([50,0])[0]} ${height}`)  // Adjust height in the viewBox
-        .attr('preserveAspectRatio', 'xMidYMid meet')
+        .attr('viewBox', `${projection([-20,0])[0]} -20 ${projection([50,0])[0]} ${height+40}`)  // Adjust height in the viewBox
+        .attr('preserveAspectRatio', 'xMinYMin meet')
         .append('g')
         // .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
@@ -187,7 +188,7 @@ function drawMap(data) {
                 } else {
                     voteChoice.property("value",d.properties["NAME"]);
                     submitBtn.classed("hidden", false);
-                    infoHTML += `<p class="vote-question">Vote for Marco to visit ${d.properties["NAME"]}!</p>`;
+                    infoHTML += `<p class="vote-question">Vote for Marco to visit ${d.properties["NAME_LONG"]}!</p>`;
                     d3.selectAll('.results').classed("hidden", false);
                 }
 
@@ -223,13 +224,18 @@ function drawMap(data) {
                 return "translate(" + path.centroid(point)[0] + "," + path.centroid(point)[1] + ")";
             })
             .attr("font-family", "franklin-gothic-condensed")
+            .attr("fill", "black")
+            .attr("font-weight", "bold")
+            // .attr("stroke", "black")
+            // .attr("stroke-width", 0.5)
+            // .attr("stroke-opacity", 0.4)
             .attr("font-size", 14);
 
         // Append each word in a separate <tspan> with a new line
         textArray.forEach((word, i) => {
             text.append("tspan")
             .attr("x", 10)  // Keep the same x position
-            .attr("dy", i === 0 ? 0 : 10)  // Offset the vertical position for each word
+            .attr("dy", i === 0 ? 0 : 14)  // Offset the vertical position for each word
             .text(word);
         });
     })
