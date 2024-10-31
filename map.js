@@ -255,7 +255,7 @@ function drawMap(data) {
                         <p>from <a href="${props["link"]}" target="_blank">Amazon</a></p>`
                 } else {
                     voteChoice.property("value",props["name"]);
-                    submitBtn.classed("hidden", false);
+                    //submitBtn.classed("hidden", false);
                     infoHTML += `<p class="vote-question">Vote for Marco to visit ${props["name"]}!</p>`;
                     d3.selectAll('.results').classed("hidden", false);
                 }
@@ -331,7 +331,7 @@ function drawMap(data) {
         formData.append("form-name", "voting")
         const reqBody = new URLSearchParams(formData);
   
-        await fetch("https://marcos-travels.netlify.app/", {
+        //await fetch("https://marcos-travels.netlify.app/", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: reqBody.toString(),
