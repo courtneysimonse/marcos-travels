@@ -3,10 +3,16 @@
 
 async function loadData() {
     // load data file
-    const countriesJson = await d3.json("./data/countries.json");
+    const countriesJson = await d3.json("./data/countries_polygons.json");
     // const oceansJson = await d3.json("./data/ocean.json");
+    const nileJson = await d3.json("./data/nile-river.geojson");
+    const lakesJson = await d3.json("./data/africa-lakes.geojson");
+    const tinyJson = await d3.json("./data/tiny-countries.geojson");
 
-    return [countriesJson
+    return [countriesJson,
+        nileJson,
+        lakesJson,
+        tinyJson
         // , oceansJson
     ]
 }
@@ -18,7 +24,7 @@ function error(error) {
 
 const greyColor = "#aaa"
 
-const colors = ['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628'];
+const colors = ['#1b9e77','#d95f02','#7570b3','#e7298a','#66a61e','#e6ab02','#a6761d'];
 
 const data = await loadData();
 await fetchDataAndCreateChart();
@@ -30,10 +36,13 @@ function drawMap(data) {
 
     const countriesJson = data[0];
     // const oceansJson = data[1];
+    const nileJson = data[1];
+    const lakesJson = data[2];
+    const tinyJson = data[3];
     
     const countriesGeojson = topojson.feature(countriesJson, {
         type: "GeometryCollection",
-        geometries: countriesJson.objects.countries.geometries
+        geometries: countriesJson.objects.countries_polygons.geometries
     });
 
     const bounds = d3.geoBounds(countriesGeojson);
@@ -52,45 +61,50 @@ function drawMap(data) {
     //     geometries: oceansJson.objects.ocean.geometries
     // });
     
-    // const margin = {
-    //     top: 0,
-    //     right: 0,
-    //     bottom: 0,
-    //     left: 0
-    // };
+    const margin = {
+        top: 10,
+        right: 0,
+        bottom: 10,
+        left: 0
+    };
     
     const height = document.getElementById('map').clientHeight;
-    //  - margin.left - margin.right;
+     - margin.left - margin.right;
     
-    const width = height * aspectRatio;  // Adjust height based on the aspect ratio    
+    // const width = height * aspectRatio;  // Adjust height based on the aspect ratio    
+    // const width = document.getElementById('map').clientWidth;
+    
+    const width = document.getElementById('map').clientWidth;
+     - margin.left - margin.right;
+    // console.log(aspectRatio);
+    
+    // const height = width / aspectRatio;  // Adjust height based on the aspect ratio    
+    
     console.log('SVG Width:', width);
     console.log('SVG Height:', height);
 
-    document.getElementById('map').style.width = width+"px";
+    // document.getElementById('map').style.width = width+"px";
 
     const projection = d3.geoNaturalEarth1()
         // .scale(width)  // Adjust scale based on width
-        // .center([0, -45])    // Move the map center upwards
-        // .translate([width / 2, height / 2])  // Center on the SVG
-        .fitExtent([[0, 0], [width, height]], countriesGeojson)  // Adjust fit
-    
+        .fitSize([width - 150, height - 90], countriesGeojson)  // Adjust fit
 
     // Prepare SVG path and color, import the
     // effect from above projection.
     const path = d3.geoPath()
         .projection(projection);
     
-    console.log(projection([170,0]));
+    // console.log(projection([170,0]));
     
 
     // select the map element
     var svg = d3.select("#map")
         .append("svg")
         .attr("id", "map-svg")
-        .attr('viewBox', `${projection([-20,0])[0]} -20 ${projection([50,0])[0]} ${height+40}`)  // Adjust height in the viewBox
-        .attr('preserveAspectRatio', 'xMinYMin meet')
+        .attr('viewBox', `0 0 ${width} ${height}`)  // Adjust height in the viewBox
+        .attr('preserveAspectRatio', 'xMidYMid meet')
         .append('g')
-        // .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+        .attr('transform', 'translate(' + 75 + ',' + 45 + ')');
 
 
     // var oceanBoundary = svg.append("g")
@@ -107,106 +121,244 @@ function drawMap(data) {
     var popup = d3.select("#popup");
     // var popupEl = document.getElementById("popup");
 
-    var infoBox = d3.select("#info-box");
-    var infoContent = d3.select("#info-content");
     var voteChoice = d3.select("#vote-choice");
     var submitBtn = d3.select(".btn-submit");
+    var popupText = d3.select("#popup-text");
+    var hoverPopup = d3.select("#hover");
     
     var selected;
     
     // create and append a new SVG g element to the SVG
-    var continentBoundary = svg.append("g")
+    var countryBoundary = svg.append("g")
         .selectAll("path")  // select all the paths (that don't exist yet)
         .data(countriesGeojson.features) // use the GeoJSON data
         .enter()  // enter the selection
         .append("path")  // append new path elements for each data feature
         .attr("d", path)  // give each path a d attribute value
-        .attr("data-continent", (d) => {return d.properties.NAME})
-        .classed("continent-poly", true)
+        .attr("data-country", (d) => {return d.properties.NAME})
+        .classed("country-poly", true)
         .attr("fill", (d, i) => {
             return colors[+d.properties["MAPCOLOR7"]] || "#999";
         })
-        .on("mouseover", function(e, d) {  // when mousing over an element
-            
-            let name = d.properties["NAME"]
-            
-            if (name) {
-                this.style.cursor = 'pointer';
-                d3.select(this).classed("hover", true) // select it and add a class name
+        .on("mouseover", mouseover)
+        .on("mousemove", mousemove)
+        .on("mouseout", mouseout)
+        .on("click", click)
 
-                let popupHTML = '';
+    svg.append("g")
+        .selectAll("circle")  // select all the paths (that don't exist yet)
+        .data(tinyJson.features) // use the GeoJSON data
+        .enter()  // enter the selection
+        .append("circle")
+        .attr("cx", d => projection(d.geometry.coordinates)[0])
+        .attr("cy", d => projection(d.geometry.coordinates)[1])
+        .attr("r", 5)
+        .attr("fill", (d, i) => {
+            return colors[+d.properties["MAPCOLOR7"]] || "#999";
+        })
+        .classed("country-poly", true)
+        .on("mouseover", mouseover)
+        .on("mousemove", mousemove)
+        .on("mouseout", mouseout)
+        .on("click", click)
 
-                if (d.properties["exclude"]) {
-                    popupHTML += `<p>Sorry, Marco isn't traveling to ${name} this time.</p>`
-                } else {
-                    popupHTML += `<p>Click to select ${d.properties["NAME_LONG"]}</p>`;
-                }
-                
-                popup.html(popupHTML)
-                .style("left", (e.pageX + 10) + "px")
-                .style("top", (e.pageY - 15) + "px");
+    svg.append("g")
+        .selectAll("path")  // select all the paths (that don't exist yet)
+        .data(nileJson.features) // use the GeoJSON data
+        .enter()  // enter the selection
+        .append("path")  // append new path elements for each data feature
+        .attr("d", path)  // give each path a d attribute value
+        .attr("fill", "#1a88b9")
+        .attr("stroke", "#1a88b9")
+        .attr("stroke-width", 3)
+        .attr("fill-opacity", 0)
 
-                popup.style("display", "block");
-                
-                popup.transition().duration(200).style("opacity", .95 );   // make tooltip visible and update info
-                
-            }  else {
-                popup.transition().duration(200).style("opacity", 0);
-                popup.style("display", "none");
+    svg.append("g")
+        .selectAll("path")  // select all the paths (that don't exist yet)
+        .data(lakesJson.features) // use the GeoJSON data
+        .enter()  // enter the selection
+        .append("path")  // append new path elements for each data feature
+        .attr("d", path)  // give each path a d attribute value
+        .attr("fill", "#1a88b9")
+        .attr("stroke", "#0f516f")
+        .attr("fill-opacity", .7)
+
+
+    countriesGeojson.features.forEach(drawLabels)
+
+    tinyJson.features.forEach(drawLabels)
+
+
+    d3.select("form").on("submit", async (e) => {
+        e.preventDefault();
+
+        const lastSubmission = localStorage.getItem('formSubmissionDate');
+        const now = new Date().getTime();
+
+        if (lastSubmission) {
+            const timeElapsed = now - lastSubmission;
+            const oneDay = 24 * 60 * 60 * 1000; // Milliseconds in a day
+      
+            if (timeElapsed < oneDay) {
+              alert('You have already submitted the form today. Please try again tomorrow.');
+              return;
             }
-            
+        }
+
+        // If no submission or it's been more than a day, allow submission
+        localStorage.setItem('formSubmissionDate', now);
+
+        e.target.classList.add("hidden");
+        // infoContent.classed("hidden", true);
+        // d3.select('h3.centered').classed("hidden", true);
+
+        const formData = new FormData(e.target);
+        formData.append("form-name", "country")
+        const reqBody = new URLSearchParams(formData);
+  
+        await fetch("https://marcos-travels.netlify.app/", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: reqBody.toString(),
         })
-        .on("mousemove", function(e, d) { // when moving mouse, move popup with it
-            popup.style("left", (e.pageX + 10) + "px")
-                .style("top", (e.pageY - 15) + "px");
-        })
-        .on("mouseout", function(e, d) { // when mousing out of an element
-            d3.select(this).classed("hover", false) // remove the class
+
+        console.log("form submitted");
+
+        // // Call the function to fetch data and create the pie chart
+        // await fetchDataAndCreateChart();
+        
+    })
+
+    
+
+
+    d3.select('body').on('click', () => {
+        if (selected != null) {
+            selected.classed("selected", false) // removed class from last selected
             popup.transition().duration(200).style("opacity", 0);
             popup.style("display", "none");
+        }
+    })
 
-        })
-        .on("click", function (e, d) { // on click, fill popup information and show
+ 
+
+    // d3.select(window).on('resize', () => {
+    //     svg.attr(
+    //         'viewBox',
+    //         `0 0 ${width + margin.left + margin.right} ${
+    //             height + margin.top + margin.bottom
+    //         }`
+    //         );
+    //     });
+        
+    function mouseover(e, d) {  // when mousing over an element
             
-            e.stopPropagation();
+        let name = d.properties["NAME"]
+        
+        if (name) {
+            d3.select(this).classed("hover", true) // select it and add a class name
+    
+            let popupHTML = '';
+    
+            if (d.properties["exclude"]) {
+                popupHTML += `<p>Sorry, Marco isn't traveling to ${name} this time.</p>`
+            } else {
+                popupHTML += `<p>Click to select ${d.properties["NAME_LONG"]}</p>`;
+            }
+    
+            hoverPopup.html(popupHTML);
             
-            if (d.properties["NAME"]) {
-                if (selected != null) {
-                    selected.classed("selected", false) // removed class from last selected
-                }
-                selected = d3.select(this);
-                d3.select(this).classed("selected", true).raise(); // select it and add a class name
+            hoverPopup.style("left", (e.pageX + 10) + "px")
+                .style("top", (e.pageY - 15) + "px");
+    
+            hoverPopup.style("display", "block");
+            
+            hoverPopup.transition().duration(200).style("opacity", .95 );   // make tooltip visible and update info
+            
+        } else {
+            hoverPopup.transition().duration(200).style("opacity", 0);
+            hoverPopup.style("display", "none");
+        }
+        
+    }
 
-                let infoHTML = "";
-                infoHTML += `<h3 class="info-heading">${d.properties["NAME_LONG"]}</h3><hr>`;
+    function mousemove(e, d) { // when moving mouse, move popup with it
+        hoverPopup.style("left", (e.pageX + 10) + "px")
+            .style("top", (e.pageY - 15) + "px");
+    }
 
-                if (d.properties["exclude"]) {
-                    d3.selectAll('.results').classed("hidden", true);
-                    submitBtn.classed("hidden", true);
-                    infoHTML += `<p></p>`
-                    
-                } else {
-                    voteChoice.property("value",d.properties["NAME"]);
-                    submitBtn.classed("hidden", false);
-                    infoHTML += `<p class="vote-question">Vote for Marco to visit ${d.properties["NAME_LONG"]}!</p>`;
-                    d3.selectAll('.results').classed("hidden", false);
-                }
+    function mouseout(e, d) { // when mousing out of an element
 
-                infoContent.html(infoHTML);
+        d3.select(this).classed("hover", false) // remove the class
+        hoverPopup.transition().duration(200).style("opacity", 0);
+        hoverPopup.style("display", "none");
 
-                infoBox.classed("hidden", false);
-                
-                infoBox.transition().duration(200).style("opacity", 1);
-                
+    }
+
+    function click(e, d) { // on click, fill popup information and show
+        hoverPopup.transition().duration(200).style("opacity", 0);
+        hoverPopup.style("display", "none");
+
+        e.stopPropagation();
+        
+        if (d.properties["NAME"]) {
+            if (selected != null) {
+                selected.classed("selected", false) // removed class from last selected
+            }
+            selected = d3.select(this);
+            d3.select(this).classed("selected", true).raise(); // select it and add a class name
+
+            let infoHTML = "";
+
+            if (d.properties["exclude"]) {
+                submitBtn.classed("hidden", true);
+                infoHTML += `<p></p>`
                 
             } else {
-                // popup.transition().duration(200).style("opacity", 0);
-                // popup.style("display", "none");
+                voteChoice.property("value",d.properties["NAME"]);
+                submitBtn.classed("hidden", false);
+                infoHTML += `<p class="vote-question">Vote for Marco to visit ${d.properties["NAME_LONG"]}!</p>`;
+
+                popupText.html(infoHTML);
+
+                popup.style("left", (e.pageX + 10) + "px")
+                    .style("top", (e.pageY - 15) + "px");
+                popup.style("display", "block");
+            
+                popup.transition().duration(200).style("opacity", .95 );
             }
-        })
+            
+            
+        } else {
+            popup.transition().duration(200).style("opacity", 0);
+            popup.style("display", "none");
+        }
+    }
 
+    function drawLabels(x) {
+        if (x.properties["callouts_originx"] || x.properties["callouts_destinationx"]) {
+            console.log("need callout");
+            // console.log(projection([x.properties["callouts_originx"], x.properties["callouts_originy"]]));
+            // console.log(path.centroid(x));
 
-    countriesGeojson.features.forEach(x => {
+            let originx = x.properties["callouts_originx"] ? x.properties["callouts_originx"] : x.properties["LABEL_X"];
+            let originy = x.properties["callouts_originy"] ? x.properties["callouts_originy"] : x.properties["LABEL_Y"];
+            let destinationx = x.properties["callouts_destinationx"] ? x.properties["callouts_destinationx"] : path.centroid(x)[0];
+            let destinationy = x.properties["callouts_destinationy"] ? x.properties["callouts_destinationy"] : path.centroid(x)[1];
+
+            svg.append("line")
+                .attr("x1",
+                    projection([originx, originy])[0]
+                )
+                .attr("y1", 
+                    projection([originx, originy])[1]
+                )
+                .attr("x2", projection([destinationx, destinationy])[0])
+                .attr("y2", projection([destinationx, destinationy])[1])
+                .attr("stroke", "black")
+            
+        }
+        
         const textArray = x.properties.NAME.split(" ");
         // Append the text to the SVG
         const text = svg.append("text")
@@ -238,71 +390,9 @@ function drawMap(data) {
             .attr("dy", i === 0 ? 0 : 14)  // Offset the vertical position for each word
             .text(word);
         });
-    })
 
-
-    d3.select("form").on("submit", async (e) => {
-        e.preventDefault();
-
-        const lastSubmission = localStorage.getItem('formSubmissionDate');
-        const now = new Date().getTime();
-
-        if (lastSubmission) {
-            const timeElapsed = now - lastSubmission;
-            const oneDay = 24 * 60 * 60 * 1000; // Milliseconds in a day
-      
-            if (timeElapsed < oneDay) {
-              alert('You have already submitted the form today. Please try again tomorrow.');
-              return;
-            }
-        }
-
-        // If no submission or it's been more than a day, allow submission
-        localStorage.setItem('formSubmissionDate', now);
-
-        e.target.classList.add("hidden");
-        // infoContent.classed("hidden", true);
-        // d3.select('h3.centered').classed("hidden", true);
-
-        const formData = new FormData(e.target);
-        formData.append("form-name", "voting")
-        const reqBody = new URLSearchParams(formData);
-  
-        await fetch("https://marcos-travels.netlify.app/", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: reqBody.toString(),
-        })
-
-        console.log("form submitted");
-
-        // Call the function to fetch data and create the pie chart
-        await fetchDataAndCreateChart();
-        d3.selectAll('.results').classed("hidden", false);
         
-    })
-
-    
-
-
-    // d3.select('body').on('click', () => {
-    //     if (selected != null) {
-    //         selected.classed("selected", false) // removed class from last selected
-    //     }
-    // })
-
- 
-
-    // d3.select(window).on('resize', () => {
-    //     svg.attr(
-    //         'viewBox',
-    //         `0 0 ${width + margin.left + margin.right} ${
-    //             height + margin.top + margin.bottom
-    //         }`
-    //         );
-    //     });
-        
-    
+    }
         
 } // end drawMap
 
@@ -310,21 +400,23 @@ function drawMap(data) {
 // Function to fetch data and create the pie chart
 async function fetchDataAndCreateChart() {
     // API URL
-    const apiUrl = "/.netlify/functions/api";
+    const apiUrl = "/.netlify/functions/api_countries";
 
     try {
         // Fetch the data
         const response = await fetch(apiUrl);
         const choices = await response.json();
 
-        // Count occurrences of each choice
-        const choiceCount = choices.reduce((acc, choice) => {
-            acc[choice] = (acc[choice] || 0) + 1;
-            return acc;
-        }, {});
+        d3.select("#vote-count").text(choices.length)
+
+        // // Count occurrences of each choice
+        // const choiceCount = choices.reduce((acc, choice) => {
+        //     acc[choice] = (acc[choice] || 0) + 1;
+        //     return acc;
+        // }, {});
 
         // Now create the pie chart with the fetched data
-        createPieChart(choiceCount);
+        // createPieChart(choiceCount);
     } catch (error) {
         console.error("Error fetching data:", error);
     }
@@ -416,4 +508,3 @@ function createPieChart(data) {
         .text(`Total Votes: ${totalVotes}`);
 }
 
-    

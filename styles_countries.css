@@ -34,7 +34,7 @@ h3.info-heading {
 
 #map {
     height: calc(100vh - 200px);
-    /* width: 100%; */
+    width: 100%;
 }
 
 form {
@@ -70,7 +70,7 @@ form {
 
 @media (min-width: 768px) {
     #map {
-        /* flex-grow: 1; */
+        flex-basis: 100%;
     }
 
     #info-box {
@@ -111,7 +111,7 @@ form wa-button {
 
 /* map popup styles */
 .popup {
-    pointer-events: none;
+    /* pointer-events: none; */
     position: absolute;
     opacity: 0;
     min-width: 20px;
@@ -123,6 +123,18 @@ form wa-button {
     font-size: .8em;
     box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
     display: none;
+}
+
+.popup button {
+    pointer-events: all;
+}
+
+#hoverPopup {
+    z-index: 99;
+}
+
+#popup {
+    z-index: 100;
 }
 
 .popup p {
@@ -138,11 +150,12 @@ form wa-button {
 }
 
 /* map interaction styles */
-.continent-poly {
+.country-poly {
     stroke: #373737;
     fill-opacity: 1;
     stroke-width: 2px;
     stroke-opacity: 0.7;
+    cursor: pointer;
 }
 
 .selected, .hover {

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Country Results</title>
+</head>
+<body>
+    <h3 class="underlined results">Results</h3>
+    <p id="total-votes" class="hidden results left"></p>
+    <svg class="hidden results" id="pie-chart"></svg>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <script type="module">
+
+await fetchDataAndCreateChart();
+// Function to fetch data and create the pie chart
+async function fetchDataAndCreateChart() {
+    // API URL
+    const apiUrl = "/.netlify/functions/api_countries";
+
+    try {
+        // Fetch the data
+        const response = await fetch(apiUrl);
+        const choices = await response.json();
+
+        // Count occurrences of each choice
+        const choiceCount = choices.reduce((acc, choice) => {
+            acc[choice] = (acc[choice] || 0) + 1;
+            return acc;
+        }, {});
+
+        // Now create the pie chart with the fetched data
+        createPieChart(choiceCount);
+    } catch (error) {
+        console.error("Error fetching data:", error);
+    }
+}
+
+// Function to create the pie chart
+function createPieChart(data) {
+    // Set dimensions and radius of the pie chart
+    const width = 90;
+    const height = 110;
+    const radius = (Math.min(width, height) / 2);
+
+    const colorMapping = {
+        Africa: "#008627",   
+        Europe: "#cb111f",  
+        "Australia/ Oceania": "#f9d51f" 
+    };
+
+    // Create the color scale
+    const color = d3.scaleOrdinal()
+        .domain(Object.keys(data))
+        .range(Object.keys(data).map(choice => colorMapping[choice] || "#ccc"));
+
+    // Total number of votes
+    const totalVotes = Object.values(data).reduce((sum, count) => sum + count, 0);
+
+    // Create the pie function
+    const pie = d3.pie()
+        .value(d => d[1]); // Value comes from the data object
+
+    // Create the arc function
+    const arc = d3.arc()
+        .innerRadius(0) // Full pie chart (no hole in the middle)
+        .outerRadius(radius);
+
+    d3.select("#pie-chart > *").remove()
+    // Create an SVG group element for the pie chart
+    const svg = d3.select("#pie-chart")
+        .attr("width", width * 2.3)
+        .attr("height", height * 1.2)
+        .append("g")
+        .attr("transform", `translate(${(width / 2) + 66}, ${height / 2 + 10})`);
+
+    // Create arcs and append them to the pie chart
+    const arcs = svg.selectAll(".arc")
+        .data(pie(Object.entries(data)))
+        .enter()
+        .append("g")
+        .attr("class", "arc");
+
+    // Append path for each arc and set the color
+    arcs.append("path")
+        .attr("d", arc)
+        .attr("fill", d => color(d.data[0]))
+        .attr("stroke", "#fff");
+
+    svg.selectAll("text")
+        .data(pie(Object.entries(data)))
+        .enter()
+        .append("text")
+        .attr("transform", d => {
+
+            const translate = [0, 0];
+
+            if (arc.centroid(d)[0] > 0) {
+                translate[0] = arc.centroid(d)[0] + 50;
+            } else {
+                translate[0] = arc.centroid(d)[0] - 50;
+            }
+
+            if (arc.centroid(d)[1] > 0) {
+                translate[1] = arc.centroid(d)[1] + 20;
+            } else {
+                translate[1] = arc.centroid(d)[1] - 25;
+            }
+            
+            return `translate(${translate[0]}, ${translate[1]})`;
+        })
+        .attr("text-anchor", "middle")
+        .text(d => {
+            const percentage = ((d.data[1] / totalVotes) * 100).toFixed(0);
+            return `${d.data[0]}: ${percentage}%`;
+        })
+        .style("fill", "#000")
+        .style("font-size", "8pt")
+        .style("font-family", "franklin-gothic-condensed");
+
+    d3.select('#total-votes')
+        .text(`Total Votes: ${totalVotes}`);
+}
+    </script>
+</body>
+</html>

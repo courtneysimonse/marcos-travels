@@ -332,10 +332,10 @@ function drawMap(data) {
         const reqBody = new URLSearchParams(formData);
   
         //await fetch("https://marcos-travels.netlify.app/", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: reqBody.toString(),
-        })
+        //     method: "POST",
+        //     headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        //     body: reqBody.toString(),
+        // })
 
         console.log("form submitted");
 
