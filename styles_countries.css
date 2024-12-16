@@ -158,13 +158,13 @@ form wa-button {
     cursor: pointer;
 }
 
-.selected, .hover {
+.selected, .hover, .selected *, .hover * {
     stroke-opacity: 1;
     stroke-width: 2.8px;
     stroke: #333;
 }
 
-.selected {
+.selected, .selected * {
     stroke: #eceeef;
 }
 

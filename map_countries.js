@@ -8,11 +8,13 @@ async function loadData() {
     const nileJson = await d3.json("./data/nile-river.geojson");
     const lakesJson = await d3.json("./data/africa-lakes.geojson");
     const tinyJson = await d3.json("./data/tiny-countries.geojson");
+    // const countriesSVG = await d3.svg("./images/africa.svg")
 
     return [countriesJson,
         nileJson,
         lakesJson,
-        tinyJson
+        tinyJson,
+        // countriesSVG
         // , oceansJson
     ]
 }
@@ -25,6 +27,8 @@ function error(error) {
 const greyColor = "#aaa"
 
 const colors = ['#1b9e77','#d95f02','#7570b3','#e7298a','#66a61e','#e6ab02','#a6761d'];
+
+const excluded = [];
 
 const data = await loadData();
 await fetchDataAndCreateChart();
@@ -39,84 +43,8 @@ function drawMap(data) {
     const nileJson = data[1];
     const lakesJson = data[2];
     const tinyJson = data[3];
-    
-    const countriesGeojson = topojson.feature(countriesJson, {
-        type: "GeometryCollection",
-        geometries: countriesJson.objects.countries_polygons.geometries
-    });
-
-    const bounds = d3.geoBounds(countriesGeojson);
-    console.log('Geo Bounds:', bounds);
-    const [[minLon, minLat], [maxLon, maxLat]] = bounds;
-
-    const geoWidth = maxLon - minLon;
-    const geoHeight = maxLat - minLat;
-
-    const aspectRatio = geoWidth / geoHeight;
-    console.log('GeoJSON Aspect Ratio:', aspectRatio);
-
-
-    // const oceansGeojson = topojson.feature(oceansJson, {
-    //     type: "GeometryCollection",
-    //     geometries: oceansJson.objects.ocean.geometries
-    // });
-    
-    const margin = {
-        top: 10,
-        right: 0,
-        bottom: 10,
-        left: 0
-    };
-    
-    const height = document.getElementById('map').clientHeight;
-     - margin.left - margin.right;
-    
-    // const width = height * aspectRatio;  // Adjust height based on the aspect ratio    
-    // const width = document.getElementById('map').clientWidth;
-    
-    const width = document.getElementById('map').clientWidth;
-     - margin.left - margin.right;
-    // console.log(aspectRatio);
-    
-    // const height = width / aspectRatio;  // Adjust height based on the aspect ratio    
-    
-    console.log('SVG Width:', width);
-    console.log('SVG Height:', height);
-
-    // document.getElementById('map').style.width = width+"px";
-
-    const projection = d3.geoNaturalEarth1()
-        // .scale(width)  // Adjust scale based on width
-        .fitSize([width - 150, height - 90], countriesGeojson)  // Adjust fit
-
-    // Prepare SVG path and color, import the
-    // effect from above projection.
-    const path = d3.geoPath()
-        .projection(projection);
-    
-    // console.log(projection([170,0]));
-    
-
-    // select the map element
-    var svg = d3.select("#map")
-        .append("svg")
-        .attr("id", "map-svg")
-        .attr('viewBox', `0 0 ${width} ${height}`)  // Adjust height in the viewBox
-        .attr('preserveAspectRatio', 'xMidYMid meet')
-        .append('g')
-        .attr('transform', 'translate(' + 75 + ',' + 45 + ')');
-
-
-    // var oceanBoundary = svg.append("g")
-    //     .selectAll("path")  // select all the paths (that don't exist yet)
-    //     .data(oceansGeojson.features) // use the GeoJSON data
-    //     .enter()  // enter the selection
-    //     .append("path")  // append new path elements for each data feature
-    //     .attr("d", path)  // give each path a d attribute value
-    //     .attr("fill", "#1a88b9")
-    //     .attr("stroke", "#373737")
-    //     .attr("fill-opacity", .7)
-    
+    // const countriesSVG = data[4];
+      
     // select popup element
     var popup = d3.select("#popup");
     // var popupEl = document.getElementById("popup");
@@ -125,68 +53,55 @@ function drawMap(data) {
     var submitBtn = d3.select(".btn-submit");
     var popupText = d3.select("#popup-text");
     var hoverPopup = d3.select("#hover");
+
+    d3.select("#map-svg")
+    
+    // Select the <g> group by id
+    const polygons = d3.select("#map-svg").select("#polygons");
+
+    // Select all <path> elements within the group
+    polygons.selectChildren()
+        .each(function () {
+            const path = d3.select(this);
+            const titleElement = path.select("title");
+            
+            if (!titleElement.empty()) {
+                // If a title exists, store it as a data attribute
+                path.attr("data-title", titleElement.text());
+            } else {
+                // Log to console if the title is missing
+                console.warn("Polygon missing title:", this);
+            }
+        })
+        // .classed("country-poly", true)
+        .on("mouseover", mouseover)
+        .on("mousemove", mousemove)
+        .on("mouseout", mouseout)
+        .on("click", click)
+
     
     var selected;
-    
-    // create and append a new SVG g element to the SVG
-    var countryBoundary = svg.append("g")
-        .selectAll("path")  // select all the paths (that don't exist yet)
-        .data(countriesGeojson.features) // use the GeoJSON data
-        .enter()  // enter the selection
-        .append("path")  // append new path elements for each data feature
-        .attr("d", path)  // give each path a d attribute value
-        .attr("data-country", (d) => {return d.properties.NAME})
-        .classed("country-poly", true)
-        .attr("fill", (d, i) => {
-            return colors[+d.properties["MAPCOLOR7"]] || "#999";
-        })
-        .on("mouseover", mouseover)
-        .on("mousemove", mousemove)
-        .on("mouseout", mouseout)
-        .on("click", click)
 
-    svg.append("g")
-        .selectAll("circle")  // select all the paths (that don't exist yet)
-        .data(tinyJson.features) // use the GeoJSON data
-        .enter()  // enter the selection
-        .append("circle")
-        .attr("cx", d => projection(d.geometry.coordinates)[0])
-        .attr("cy", d => projection(d.geometry.coordinates)[1])
-        .attr("r", 5)
-        .attr("fill", (d, i) => {
-            return colors[+d.properties["MAPCOLOR7"]] || "#999";
-        })
-        .classed("country-poly", true)
-        .on("mouseover", mouseover)
-        .on("mousemove", mousemove)
-        .on("mouseout", mouseout)
-        .on("click", click)
+    // svg.append("g")
+    //     .selectAll("path")  // select all the paths (that don't exist yet)
+    //     .data(nileJson.features) // use the GeoJSON data
+    //     .enter()  // enter the selection
+    //     .append("path")  // append new path elements for each data feature
+    //     .attr("d", path)  // give each path a d attribute value
+    //     .attr("fill", "#1a88b9")
+    //     .attr("stroke", "#1a88b9")
+    //     .attr("stroke-width", 3)
+    //     .attr("fill-opacity", 0)
 
-    svg.append("g")
-        .selectAll("path")  // select all the paths (that don't exist yet)
-        .data(nileJson.features) // use the GeoJSON data
-        .enter()  // enter the selection
-        .append("path")  // append new path elements for each data feature
-        .attr("d", path)  // give each path a d attribute value
-        .attr("fill", "#1a88b9")
-        .attr("stroke", "#1a88b9")
-        .attr("stroke-width", 3)
-        .attr("fill-opacity", 0)
-
-    svg.append("g")
-        .selectAll("path")  // select all the paths (that don't exist yet)
-        .data(lakesJson.features) // use the GeoJSON data
-        .enter()  // enter the selection
-        .append("path")  // append new path elements for each data feature
-        .attr("d", path)  // give each path a d attribute value
-        .attr("fill", "#1a88b9")
-        .attr("stroke", "#0f516f")
-        .attr("fill-opacity", .7)
-
-
-    countriesGeojson.features.forEach(drawLabels)
-
-    tinyJson.features.forEach(drawLabels)
+    // svg.append("g")
+    //     .selectAll("path")  // select all the paths (that don't exist yet)
+    //     .data(lakesJson.features) // use the GeoJSON data
+    //     .enter()  // enter the selection
+    //     .append("path")  // append new path elements for each data feature
+    //     .attr("d", path)  // give each path a d attribute value
+    //     .attr("fill", "#1a88b9")
+    //     .attr("stroke", "#0f516f")
+    //     .attr("fill-opacity", .7)
 
 
     d3.select("form").on("submit", async (e) => {
@@ -251,19 +166,21 @@ function drawMap(data) {
     //         );
     //     });
         
-    function mouseover(e, d) {  // when mousing over an element
+    function mouseover(e) {  // when mousing over an element
             
-        let name = d.properties["NAME"]
+        let name = this.dataset.title;
+
+        d3.select(this).raise();
         
         if (name) {
             d3.select(this).classed("hover", true) // select it and add a class name
     
             let popupHTML = '';
     
-            if (d.properties["exclude"]) {
+            if (excluded.includes(name)) {
                 popupHTML += `<p>Sorry, Marco isn't traveling to ${name} this time.</p>`
             } else {
-                popupHTML += `<p>Click to select ${d.properties["NAME_LONG"]}</p>`;
+                popupHTML += `<p>Click to select ${name}</p>`;
             }
     
             hoverPopup.html(popupHTML);
@@ -300,8 +217,10 @@ function drawMap(data) {
         hoverPopup.style("display", "none");
 
         e.stopPropagation();
+
+        const name = this.dataset.title;
         
-        if (d.properties["NAME"]) {
+        if (name) {
             if (selected != null) {
                 selected.classed("selected", false) // removed class from last selected
             }
@@ -310,14 +229,14 @@ function drawMap(data) {
 
             let infoHTML = "";
 
-            if (d.properties["exclude"]) {
+            if (excluded.includes(name)) {
                 submitBtn.classed("hidden", true);
                 infoHTML += `<p></p>`
                 
             } else {
-                voteChoice.property("value",d.properties["NAME"]);
+                voteChoice.property("value",name);
                 submitBtn.classed("hidden", false);
-                infoHTML += `<p class="vote-question">Vote for Marco to visit ${d.properties["NAME_LONG"]}!</p>`;
+                infoHTML += `<p class="vote-question">Vote for Marco to visit ${name}!</p>`;
 
                 popupText.html(infoHTML);
 
@@ -333,65 +252,6 @@ function drawMap(data) {
             popup.transition().duration(200).style("opacity", 0);
             popup.style("display", "none");
         }
-    }
-
-    function drawLabels(x) {
-        if (x.properties["callouts_originx"] || x.properties["callouts_destinationx"]) {
-            console.log("need callout");
-            // console.log(projection([x.properties["callouts_originx"], x.properties["callouts_originy"]]));
-            // console.log(path.centroid(x));
-
-            let originx = x.properties["callouts_originx"] ? x.properties["callouts_originx"] : x.properties["LABEL_X"];
-            let originy = x.properties["callouts_originy"] ? x.properties["callouts_originy"] : x.properties["LABEL_Y"];
-            let destinationx = x.properties["callouts_destinationx"] ? x.properties["callouts_destinationx"] : path.centroid(x)[0];
-            let destinationy = x.properties["callouts_destinationy"] ? x.properties["callouts_destinationy"] : path.centroid(x)[1];
-
-            svg.append("line")
-                .attr("x1",
-                    projection([originx, originy])[0]
-                )
-                .attr("y1", 
-                    projection([originx, originy])[1]
-                )
-                .attr("x2", projection([destinationx, destinationy])[0])
-                .attr("y2", projection([destinationx, destinationy])[1])
-                .attr("stroke", "black")
-            
-        }
-        
-        const textArray = x.properties.NAME.split(" ");
-        // Append the text to the SVG
-        const text = svg.append("text")
-            .classed("map-label", true)
-            .attr('text-anchor', 'middle')
-            .attr("transform", function() { 
-                const point = {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [x.properties["LABEL_X"], x.properties["LABEL_Y"]]
-                    }
-                };
-            
-                return "translate(" + path.centroid(point)[0] + "," + path.centroid(point)[1] + ")";
-            })
-            .attr("font-family", "franklin-gothic-condensed")
-            .attr("fill", "black")
-            .attr("font-weight", "bold")
-            // .attr("stroke", "black")
-            // .attr("stroke-width", 0.5)
-            // .attr("stroke-opacity", 0.4)
-            .attr("font-size", 14);
-
-        // Append each word in a separate <tspan> with a new line
-        textArray.forEach((word, i) => {
-            text.append("tspan")
-            .attr("x", 10)  // Keep the same x position
-            .attr("dy", i === 0 ? 0 : 14)  // Offset the vertical position for each word
-            .text(word);
-        });
-
-        
     }
         
 } // end drawMap
