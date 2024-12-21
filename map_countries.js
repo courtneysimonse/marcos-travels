@@ -38,11 +38,11 @@ drawMap(data);
 // accepts the data as a parameter statesData
 function drawMap(data) {
 
-    const countriesJson = data[0];
+    // const countriesJson = data[0];
     // const oceansJson = data[1];
-    const nileJson = data[1];
-    const lakesJson = data[2];
-    const tinyJson = data[3];
+    // const nileJson = data[1];
+    // const lakesJson = data[2];
+    // const tinyJson = data[3];
     // const countriesSVG = data[4];
       
     // select popup element
