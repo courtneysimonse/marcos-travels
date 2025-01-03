@@ -3,17 +3,18 @@
 
 async function loadData() {
     // load data file
-    const countriesJson = await d3.json("./data/countries_polygons.json");
+    // const countriesJson = await d3.json("./data/countries_polygons.json");
     // const oceansJson = await d3.json("./data/ocean.json");
     const nileJson = await d3.json("./data/nile-river.geojson");
     const lakesJson = await d3.json("./data/africa-lakes.geojson");
-    const tinyJson = await d3.json("./data/tiny-countries.geojson");
+    // const tinyJson = await d3.json("./data/tiny-countries.geojson");
     // const countriesSVG = await d3.svg("./images/africa.svg")
 
-    return [countriesJson,
+    return [
+        // countriesJson,
         nileJson,
         lakesJson,
-        tinyJson,
+        // tinyJson,
         // countriesSVG
         // , oceansJson
     ]
@@ -40,8 +41,8 @@ function drawMap(data) {
 
     // const countriesJson = data[0];
     // const oceansJson = data[1];
-    // const nileJson = data[1];
-    // const lakesJson = data[2];
+    const nileJson = data[0];
+    const lakesJson = data[1];
     // const tinyJson = data[3];
     // const countriesSVG = data[4];
       
@@ -54,7 +55,7 @@ function drawMap(data) {
     var popupText = d3.select("#popup-text");
     var hoverPopup = d3.select("#hover");
 
-    d3.select("#map-svg")
+    const svg = d3.select("#map-svg")
     
     // Select the <g> group by id
     const polygons = d3.select("#map-svg").select("#polygons");
