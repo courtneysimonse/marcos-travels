@@ -55,7 +55,8 @@ function drawMap(data) {
     var popupText = d3.select("#popup-text");
     var hoverPopup = d3.select("#hover");
 
-    const svg = d3.select("#map-svg")
+    const svg = d3.select("#map-svg");
+    const infoBox = d3.select("#info-box");
     
     // Select the <g> group by id
     const polygons = d3.select("#map-svg").select("#polygons");
@@ -116,7 +117,7 @@ function drawMap(data) {
             const oneDay = 24 * 60 * 60 * 1000; // Milliseconds in a day
       
             if (timeElapsed < oneDay) {
-              alert('You have already submitted the form today. Please try again tomorrow.');
+              alert(`You have already submitted the form today. Please try again tomorrow.<br>The winning country will be revealed on "x/x/2025". Tune in to Facebook Live to see Marco's chosen destination`);
               return;
             }
         }
@@ -142,6 +143,10 @@ function drawMap(data) {
 
         // // Call the function to fetch data and create the pie chart
         // await fetchDataAndCreateChart();
+
+        infoBox.classed("hidden", false);
+                
+        infoBox.transition().duration(200).style("opacity", 1);
         
     })
 

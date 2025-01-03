@@ -33,8 +33,8 @@ h3.info-heading {
 }
 
 #map {
-    height: calc(100vh - 200px);
-    width: 100%;
+    height: calc(100vh - 100px);
+    /* width: 100%; */
 }
 
 form {
@@ -70,7 +70,7 @@ form {
 
 @media (min-width: 768px) {
     #map {
-        flex-basis: 100%;
+        /* flex-grow: 1; */
     }
 
     #info-box {
