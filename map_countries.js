@@ -117,7 +117,10 @@ function drawMap(data) {
             const oneDay = 24 * 60 * 60 * 1000; // Milliseconds in a day
       
             if (timeElapsed < oneDay) {
-              alert(`You have already submitted the form today. Please try again tomorrow.<br>The winning country will be revealed on "x/x/2025". Tune in to Facebook Live to see Marco's chosen destination`);
+              d3.select("#vote-thanks").html(`You have already submitted the form today. Please try again tomorrow.<br>The winning country will be revealed on "x/x/2025". Tune in to Facebook Live to see Marco's chosen destination`);
+              infoBox.classed("hidden", false);
+                
+              infoBox.transition().duration(200).style("opacity", 1);
               return;
             }
         }
@@ -180,6 +183,11 @@ function drawMap(data) {
         
         if (name) {
             d3.select(this).classed("hover", true) // select it and add a class name
+            if (name == "Angola") {
+                d3.select(this).selectChildren().style("stroke-width", "160000")   
+            } else {
+                d3.select("#angola").selectChildren().style("stroke-width", "")
+            }
     
             let popupHTML = '';
     
