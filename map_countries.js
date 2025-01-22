@@ -117,7 +117,7 @@ function drawMap(data) {
             const oneDay = 24 * 60 * 60 * 1000; // Milliseconds in a day
       
             if (timeElapsed < oneDay) {
-              d3.select("#vote-thanks").html(`You have already submitted the form today. Please try again tomorrow.<br>The winning country will be revealed on "x/x/2025". Tune in to Facebook Live to see Marco's chosen destination`);
+              d3.select("#vote-thanks").html(`You have already submitted the form today. Please try again tomorrow.<br>The winning country will be revealed on "2/5/2025". Tune in to Facebook Live to see Marco's chosen destination`);
               infoBox.classed("hidden", false);
                 
               infoBox.transition().duration(200).style("opacity", 1);
@@ -154,8 +154,6 @@ function drawMap(data) {
     })
 
     
-
-
     d3.select('body').on('click', () => {
         if (selected != null) {
             selected.classed("selected", false) // removed class from last selected

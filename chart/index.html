@@ -14,6 +14,7 @@
 
     <script type="module">
 
+
 await fetchDataAndCreateChart();
 // Function to fetch data and create the pie chart
 async function fetchDataAndCreateChart() {
@@ -46,11 +47,64 @@ function createPieChart(data) {
     const radius = (Math.min(width, height) / 2);
 
     const colorMapping = {
-        Africa: "#008627",   
-        Europe: "#cb111f",  
-        "Australia/ Oceania": "#f9d51f" 
-    };
-
+    "Nigeria": "#b7cd7a",
+    "Egypt": "#9e87bb",
+    "South Africa": "#9ac99d",
+    "Kenya": "#8797ca",
+    "Ghana": "#A133FF",
+    "Algeria": "#f2cb6c",
+    "Angola": "#fded74",
+    "Benin": "#3357FF",
+    "Botswana": "#9ac99d",
+    "Burkina Faso": "#A133FF",
+    "Burundi": "#e4a363",
+    "Cameroon": "#33FF57",
+    "Cape Verde": "#3357FF",
+    "Central African Republic": "#ca93bd",
+    "Chad": "#9e87bb",
+    "Comoros": "#9ac99d",
+    "Congo": "#33FF57",
+    "Djibouti": "#3357FF",
+    "Equatorial Guinea": "#FF33A1",
+    "Eritrea": "#A133FF",
+    "Eswatini": "#FF5733",
+    "Ethiopia": "#33FF57",
+    "Gabon": "#3357FF",
+    "Gambia": "#FF33A1",
+    "Guinea": "#A133FF",
+    "Guinea-Bissau": "#9ac99d",
+    "Ivory Coast": "#ca93bd",
+    "Lesotho": "#3357FF",
+    "Liberia": "#9e87bb",
+    "Libya": "#f2cb6c",
+    "Madagascar": "#f2cb6c",
+    "Malawi": "#33FF57",
+    "Mali": "#b7cd7a",
+    "Mauritania": "#b7cd7a",
+    "Mauritius": "#f2cb6c",
+    "Morocco": "#FF5733",
+    "Mozambique": "#33FF57",
+    "Namibia": "#9ac99d",
+    "Niger": "#b7cd7a",
+    "Rwanda": "#e4a363",
+    "Sao Tome and Principe": "#FF5733",
+    "Senegal": "#9ac99d",
+    "Seychelles": "#9ac99d",
+    "Sierra Leone": "#9e87bb",
+    "Somalia": "#A133FF",
+    "South Sudan": "#9e87bb",
+    "Sudan": "#9e87bb",
+    "Tanzania": "#e4a363",
+    "Togo": "#FF33A1",
+    "Tunisia": "#A133FF",
+    "Uganda": "#FF5733",
+    "Zambia": "#fded74",
+    "Zimbabwe": "#9ac99d",
+    "Western Sahara": "#9e87bb",
+    "Republic of the Congo": "#33FF57",
+    "Democratic Republic of the Congo": "#3357FF",
+    "Côte d'Ivoire": "#ca93bd"
+}
     // Create the color scale
     const color = d3.scaleOrdinal()
         .domain(Object.keys(data))
