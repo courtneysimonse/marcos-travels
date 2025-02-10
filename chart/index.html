@@ -7,8 +7,9 @@
 </head>
 <body>
     <h3 class="underlined results">Results</h3>
-    <p id="total-votes" class="hidden results left"></p>
-    <svg class="hidden results" id="pie-chart"></svg>
+    <p id="total-votes" class="results left"></p>
+    <svg class="results" id="pie-chart"></svg>
+    <ul class="results-list" id="results-list"></ul>
 
     <script src="https://d3js.org/d3.v7.min.js"></script>
 
@@ -176,6 +177,17 @@ function createPieChart(data) {
 
     d3.select('#total-votes')
         .text(`Total Votes: ${totalVotes}`);
+
+    const dataArray = Object.entries(data).sort((a, b) => b[1] - a[1]);
+    d3.select("#results-list")
+        .selectAll("li")
+        .data(dataArray)
+        .enter()
+        .append("li")
+        .text(d => `${d[0]}: ${d[1]} votes, ${(d[1] / totalVotes * 100).toFixed(2)}%`)
+        .style("font-family", "franklin-gothic-condensed")
+        .style("font-size", "12pt")
+        .style("margin-bottom", "5px");
 }
     </script>
 </body>
